@@ -5,7 +5,7 @@
  *
  *         I acknowledge all content contained herein, excluding template or example code, is my own original work.
  *
- *         Demo Link: https://youtu.be/UBmi59ZxioQ
+ *         Demo Link: https://youtu.be/FOG9ksiotUk
  */
 double map_double(double x, double in_min, double in_max, double out_min, double out_max)
 {
