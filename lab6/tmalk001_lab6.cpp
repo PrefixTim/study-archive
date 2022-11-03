@@ -38,12 +38,9 @@ int PWM_Tick(int state) {//single state Task
     static unsigned char whater_level = 0;
     static unsigned char ice_level = 0;
     static unsigned char i = 0;
-    Serial.println(j);
     if(i % 5 == 0)whater_level = analogRead(WaterLevel) < 200;
     if (!(i++)) ice_level = analogRead(IceLevel) < 200;
     i %= 20;
-    Serial.println(whater_level);
-    Serial.println(ice_level);
     digitalWrite(WaterLevelLed, whater_level && !ice_level);
     digitalWrite(IceLevelLed, !whater_level && ice_level);
     if (whater_level || ice_level) {
@@ -62,11 +59,9 @@ int PWM_Tick(int state) {//single state Task
     return state;
 }
 
-
 void setup() {
     for (char i = 2; i < 7; i++) pinMode(i, OUTPUT);
     tasks[0] = { .state = 0, .period = 10, .lastRun = 0, .TickFct = &PWM_Tick };
-    Serial.begin(115200);
 }
 
 void loop() {
