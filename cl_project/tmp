@@ -3,6 +3,7 @@
 // #ifndef __DS1307_H__
 // #define __DS1307_H__
 
+
 // #define DS1307_I2C_ADDRESS 0x68
 
 // #define MON 1
@@ -39,6 +40,7 @@
 
 // #endif
 
+
 // uint8_t DS1307::decToBcd(uint8_t val) {
 //     return ((val / 10 * 16) + (val % 10));
 // }
@@ -54,7 +56,7 @@
 
 // // /**
 // //  * \brief          The functio to start the I2C port with specified pins
-// //  *
+// //  *                 
 // //  * \param SDA      The pin number which is used as SDA pin
 // //  * \param SCL      The pin number which is used as SCL pin
 // //  *
@@ -133,6 +135,9 @@
 //     dayOfWeek = _dow;
 // }
 
+
+
+
 // DS1307 clock;//define a object of DS1307 class
 // void setup()
 // {
@@ -205,109 +210,105 @@
 //    }
 //    Serial.println(" ");
 // }
+#define SER 11
+#define RCLK 12
+#define SRCLK 13
+
 #include "Print.h"
-class LCD1602REG : public Print {
-   public:
-    enum Command { Clear=0x1,
-                   Home=0x2,
-                   NoDisplay,
-                   Display,
-                   NoBlink,
-                   Blink,
-                   NoCursor,
-                   Cursor,
-                   ScrollLeft,
-                   ScrollRight,
-                   LeftToRight,
-                   RightToLeft,
-                   AutoScroll,
-                   NoAutoScroll };
+class LiquidCrystal : public Print {
+public:
+    enum Command {Clear, Home, NoDisplay, Display, NoBlink, Blink, NoCursor, Cursor, ScrollLeft, ScrollRight, LeftToRight, RightToLeft, AutoScroll, NoAutoScroll };
     using Print::write;
-    LCD1602REG(uint8_t ser, uint8_t rclk, uint8_t srclk) {
-        _ser = ser;
-        _rclk = rclk;
-        _srclk = srclk;
-    }
     void begin() {
-        pinMode(_ser, OUTPUT);
-        pinMode(_rclk, OUTPUT);
-        pinMode(_srclk, OUTPUT);
-        delay(500);
-        command(0x38);  // Functoin Set: DL=8, N=2, F=5x8
-
-        delay(500);
-        command(0x12);  // Display ON?OFF: D=1, C=0, B=0
-        delay(500);
-        command(0x12);  // Display ON?OFF: D=1, C=0, B=0
-                delay(500);
-        command(0x12);  // Display ON?OFF: D=1, C=0, B=0
-        delay(500);
-        command(0x06);  // Entry mode
-      delay(500);
-        command(0x06);  // Entry mode
-              delay(500);
-        command(0x06);  // Entry mode
-              delay(500);
-        command(0x06);  // Entry mode
-        delay(500);
-        command(0x01);  // Clear Display
-
-        delay(50);
+        command(0x38); //Functoin Set: DL=8, N=2, F=5x8
+        command(0x12); //Display ON?OFF: D=1, C=0, B=0
+        command(0x06); //Entry mode
+        command(0x01); //Clear Display
     }
 
-    void createChar(uint8_t location, uint8_t charmap[]) {
-        location &= 0x7;  // we only have 8 locations 0-7
+    void setRowOffsets(int row0, int row1, int row2, int row3){
+  _row_offsets[0] = row0;
+  _row_offsets[1] = row1;
+}
+    void createChar(uint8_t location, uint8_t charmap[]){
+        location &= 0x7; // we only have 8 locations 0-7
         command(0x40 | (location << 3));
-        for (int i = 0; i < 8; i++) write(charmap[i]);
+        for (int i=0; i<8; i++) write(charmap[i]);
     }
-    void setCursor(uint8_t col, uint8_t row_offset) {
-        command(0x80 | (col + row_offset));
-    }
-
-    inline void command(Command comm) {
-        command((uint8_t) comm);
+    void setCursor(uint8_t col, uint8_t row) {
+        const size_t max_lines = sizeof(_row_offsets) / sizeof(*_row_offsets);
+        command(0x80 | (col + _row_offsets[row]));
+}
+    
+    void command(Command comm) {
+        switch (comm) {
+        case Clear:
+            command(0x01);
+            //set delay
+            break;
+        case Home:
+            command(0x02);
+            //set delay
+            break;
+        default:
+            break;
+        }
     }
 
     inline void command(uint8_t value) {
         send(value, LOW);
     }
-
-    inline size_t write(uint8_t value) override {
+    
+    inline size_t write(uint8_t value) {
         send(value, HIGH);
         return 1;
     }
+private:
+    virtual void send(uint8_t, uint8_t);
+    uint8_t _row_offsets[4];
+};
 
 
-   private:
-    uint8_t _ser, _rclk, _srclk;
-    inline void send(uint8_t value, uint8_t mode) {
+class LCD1602REG: public LiquidCrystal{
+    public:
+    LCD1602REG(uint8_t ser_pin, uint8_t rclk, uint8_t srclk) {
+        _ser_pin = ser_pin;
+        _rclk = rclk;
+        _srclk = srclk;  
+    }
+    inline void send(uint8_t value, uint8_t mode) override {
         digitalWrite(_rclk, LOW);
         for (int8_t i = 7; i >= 0; i--) {
-            digitalWrite(_ser, (value >> i) & 0x1);
+            digitalWrite(_ser_pin, (value >> i) & 0x1);
             digitalWrite(_srclk, HIGH);
-            delayMicroseconds(10);
             digitalWrite(_srclk, LOW);
         }
-        digitalWrite(_ser, mode);
+        digitalWrite(_ser_pin, mode);
         digitalWrite(_rclk, HIGH);
-        delayMicroseconds(10);
+        delayMicroseconds(1);
         digitalWrite(_rclk, LOW);
-        digitalWrite(_ser, LOW);
+        digitalWrite(_ser_pin, LOW);
     }
+    private:
+        uint8_t _ser_pin, _rclk, _srclk;
 };
 
 LCD1602REG lcd(11, 12, 13);
 
+
 void setup() {
-    lcd.begin();
+    pinMode(SER, OUTPUT);
+    pinMode(RCLK, OUTPUT);
+    pinMode(SRCLK, OUTPUT);
     delay(1000);
-    lcd.print("Hey World");
+    lcd.begin();
 }
 
 void loop() {
-
-    // delay(1000);
-    // lcd.command(LCD1602REG::Home);
-    // lcd.print("I say Heey");
-    // delay(1000);
+    delay(152);
+    lcd.print("Heey World");
+    delay(1000);
+    lcd.command(LiquidCrystal::Command::Home);
+    lcd.print("I say Heey");
+    delay(1000);
 }
