@@ -1,18 +1,49 @@
-#include <Wire.h>
 #include <Print.h>
+#include <Wire.h>
 
 struct TimeBcd {
     static constexpr char week_days[8][4] = {"", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
-    uint8_t second;
-    uint8_t minute;
-    uint8_t hour;
-    uint8_t dayOfWeek;
-    uint8_t dayOfMonth;
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+    uint8_t week_day;
+    uint8_t day;
     uint8_t month;
     uint8_t year;
 
-    const char* getWeek() {
-        return TimeBcd::week_days[dayOfWeek];
+    inline void printSeconds(Print &p) {
+        p.print(seconds >> 4 & 0xF);
+        p.print(seconds & 0xF);
+    }
+
+    inline void printMinutes(Print &p) {
+        p.print(minutes >> 4);
+        p.print(minutes & 0xF);
+    }
+
+    inline void printHours(Print &p) {
+        p.print(hours >> 4 & 0xF);
+        p.print(hours & 0xF);
+    }
+
+    inline void printWeekDay(Print &p) {
+        p.print(week_days[week_day]);
+    }
+
+    inline void printDay(Print &p) {
+        p.print(day >> 4);
+        p.print(day & 0xF);
+    }
+
+    inline void printMonth(Print &p) {
+        p.print(month >> 4);
+        p.print(month & 0xF);
+    }
+
+    inline void printYear(Print &p) {
+        p.print(20);
+        p.print(year >> 4);
+        p.print(year & 0xF);
     }
 };
 constexpr char TimeBcd::week_days[8][4];
@@ -42,7 +73,7 @@ class DS1307 {
         Wire.write((uint8_t)0x00);
         Wire.endTransmission();
         Wire.requestFrom(0x68, 7);
-        for (auto& i : t.arr) i = Wire.read();
+        for (auto &i : t.arr) i = Wire.read();
     }
 };
 
@@ -114,31 +145,24 @@ void setup() {
 }
 
 void loop() {
+    clock.getTime();
     printTime(clock.t.time);
     delay(1000);
 }
 
 void printTime(TimeBcd time) {
     lcd.home();
-    clock.getTime();
-    lcd.print(time.hour >> 4 & 0xF);
-    lcd.print(time.hour & 0xF);
+    time.printHours(lcd);
     lcd.print(":");
-    lcd.print(time.minute >> 4);
-    lcd.print(time.minute & 0xF);
+    time.printMinutes(lcd);
     lcd.print(":");
-    lcd.print(time.second >> 4 & 0xF);
-    lcd.print(time.second & 0xF);
+    time.printSeconds(lcd);
     lcd.print("  ");
-    lcd.print(time.getWeek());
+    time.printWeekDay(lcd);
     lcd.setCursor(0, 1);
-    lcd.print(time.month >> 4);
-    lcd.print(time.month & 0xF);
+    time.printYear(lcd);
     lcd.print("/");
-    lcd.print(time.dayOfMonth >> 4);
-    lcd.print(time.dayOfMonth & 0xF);
+    time.printMonth(lcd);
     lcd.print("/");
-    lcd.print(20);
-    lcd.print(time.year >> 4);
-    lcd.print(time.year & 0xF);
+    time.printDay(lcd);
 }
