@@ -1,9 +1,8 @@
 #include <Wire.h>
+#include <Print.h>
 
-#include "Print.h"
-
-const char* week_days[8] = {"", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
 struct TimeBcd {
+    static constexpr char week_days[8][4] = {"", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
     uint8_t second;
     uint8_t minute;
     uint8_t hour;
@@ -11,14 +10,20 @@ struct TimeBcd {
     uint8_t dayOfMonth;
     uint8_t month;
     uint8_t year;
-};
 
-union TimeUnion {
-    TimeBcd time;
-    uint8_t arr[7];
+    const char* getWeek() {
+        return TimeBcd::week_days[dayOfWeek];
+    }
 };
+constexpr char TimeBcd::week_days[8][4];
 
-struct DS1307 {
+class DS1307 {
+   public:
+    union TimeUnion {
+        TimeBcd time;
+        uint8_t arr[7];
+    };
+
     TimeUnion t;
     void begin() {
         Wire.begin();
@@ -100,7 +105,7 @@ class LCD1602REG : public Print {
 };
 
 LCD1602REG lcd(11, 12, 13);
-DS1307 clock;  // define a object of DS1307 class
+DS1307 clock;
 
 void setup() {
     Serial.begin(115200);
@@ -109,31 +114,31 @@ void setup() {
 }
 
 void loop() {
-    printTime();
+    printTime(clock.t.time);
     delay(1000);
 }
 
-void printTime() {
+void printTime(TimeBcd time) {
     lcd.home();
     clock.getTime();
-    lcd.print(clock.t.time.hour >> 4 & 0xF);
-    lcd.print(clock.t.time.hour & 0xF);
+    lcd.print(time.hour >> 4 & 0xF);
+    lcd.print(time.hour & 0xF);
     lcd.print(":");
-    lcd.print(clock.t.time.minute >> 4);
-    lcd.print(clock.t.time.minute & 0xF);
+    lcd.print(time.minute >> 4);
+    lcd.print(time.minute & 0xF);
     lcd.print(":");
-    lcd.print(clock.t.time.second >> 4 & 0xF);
-    lcd.print(clock.t.time.second & 0xF);
+    lcd.print(time.second >> 4 & 0xF);
+    lcd.print(time.second & 0xF);
     lcd.print("  ");
-    lcd.print(week_days[clock.t.time.dayOfWeek]);
+    lcd.print(time.getWeek());
     lcd.setCursor(0, 1);
-    lcd.print(clock.t.time.month >> 4);
-    lcd.print(clock.t.time.month & 0xF);
+    lcd.print(time.month >> 4);
+    lcd.print(time.month & 0xF);
     lcd.print("/");
-    lcd.print(clock.t.time.dayOfMonth >> 4);
-    lcd.print(clock.t.time.dayOfMonth & 0xF);
+    lcd.print(time.dayOfMonth >> 4);
+    lcd.print(time.dayOfMonth & 0xF);
     lcd.print("/");
     lcd.print(20);
-    lcd.print(clock.t.time.year >> 4);
-    lcd.print(clock.t.time.year & 0xF);
+    lcd.print(time.year >> 4);
+    lcd.print(time.year & 0xF);
 }
