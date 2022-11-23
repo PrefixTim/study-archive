@@ -1,89 +1,35 @@
 #include <Print.h>
 #include <Wire.h>
+#include "glue.h"
 
-struct TimeBcd {
-    static constexpr char week_days[8][4] = {"", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
-    uint8_t seconds;
-    uint8_t minutes;
-    uint8_t hours;
-    uint8_t week_day;
-    uint8_t day;
-    uint8_t month;
-    uint8_t year;
 
-    bool operator<(TimeBcd const &other) {
-        return year < other.year || month < other.month || day < other.day || hours < other.hours || minutes < other.minutes || seconds < other.seconds;
-    }
 
-    inline void printSeconds(Print &p) {
-        p.print(seconds >> 4 & 0xF);
-        p.print(seconds & 0xF);
-    }
+namespace sensors {
+class Usonic {
+   public:
+    Usonic(uint8_t echo_pin, uint8_t trig_pin) : echo_pin(echo_pin), trig_pin(trig_pin) {}
 
-    inline void printMinutes(Print &p) {
-        p.print(minutes >> 4);
-        p.print(minutes & 0xF);
-    }
-
-    inline void printHours(Print &p) {
-        p.print(hours >> 4 & 0xF);
-        p.print(hours & 0xF);
-    }
-
-    inline void printWeekDay(Print &p) {
-        p.print(week_days[week_day]);
-    }
-
-    inline void printDay(Print &p) {
-        p.print(day >> 4);
-        p.print(day & 0xF);
-    }
-
-    inline void printMonth(Print &p) {
-        p.print(month >> 4);
-        p.print(month & 0xF);
-    }
-
-    inline void printYear(Print &p) {
-        p.print(20);
-        p.print(year >> 4);
-        p.print(year & 0xF);
-    }
-};
-constexpr char TimeBcd::week_days[8][4];
-
-struct DS1307 {
-    union TimeUnion {
-        TimeBcd time;
-        uint8_t arr[7];
-    };
-
-    TimeUnion t;
     void begin() {
-        Wire.begin();
+        pinMode(trig_pin, OUTPUT);
+        pinMode(echo_pin, INPUT);
     }
 
-    void writeTime(TimeBcd time) {
-        Wire.beginTransmission(0x68);
-        Wire.write(0);
-        for (auto i : t.arr) Wire.write(i);
-        Wire.endTransmission();
-        t.time = time;
+    inline float readDistance() {
+        digitalWrite(trig_pin, LOW);
+        delayMicroseconds(2);
+        digitalWrite(trig_pin, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(trig_pin, LOW);
+        return pulseIn(echo_pin, HIGH) * 17 / 1000;
     }
 
-    void readTime() {
-        Wire.beginTransmission(0x68);
-        Wire.write(0);
-        Wire.endTransmission();
-        Wire.requestFrom(0x68, 7);
-        for (auto &i : t.arr) i = Wire.read();
-    }
-
-    bool hasPassed(TimeBcd time) {
-        return time < t.time;
-    }
+   private:
+    uint8_t echo_pin;
+    uint8_t trig_pin;
 };
 
+}  // namespace sensors
+namespace display {
 class LCD1602REG : public Print {
    public:
     using Print::write;
@@ -98,6 +44,10 @@ class LCD1602REG : public Print {
         command(0x0C);  // Display ON?OFF: D=1, C=0, B=0
         command(0x06);  // Entry mode
         command(0x01);  // Clear Display
+    }
+
+    size_t println(void) {
+        setCursor(0, 1);
     }
 
     inline void setCursor(uint8_t col, uint8_t row) {
@@ -138,29 +88,189 @@ class LCD1602REG : public Print {
     }
 };
 
-class Usonic {
-   public:
-    Usonic(uint8_t echo_pin, uint8_t trig_pin) : echo_pin(echo_pin), trig_pin(trig_pin) {}
+LCD1602REG lcd(11, 12, 13);
 
-    void begin() {
-        pinMode(trig_pin, OUTPUT);
-        pinMode(echo_pin, INPUT);
-    }
 
-    inline float readDistance() {
-        digitalWrite(trig_pin, LOW);
-        delayMicroseconds(2);
-        digitalWrite(trig_pin, HIGH);
-        delayMicroseconds(10);
-        digitalWrite(trig_pin, LOW);
-        return pulseIn(echo_pin, HIGH) * 17 / 1000;
-    }
-
-   private:
-    uint8_t echo_pin;
-    uint8_t trig_pin;
+struct Menu {
+    virtual void listen(InputEvent e);
+    virtual void printTo(LCD1602REG &p);
+    virtual void update(LCD1602REG &p);
 };
 
+namespace menu {
+Menu *point[] = {};
+uint8_t previous[] = {0, 0, 0, 0, 0, 0, 0};
+uint8_t pr_pos = 0;
+uint8_t current = 0;
+
+inline Menu *get_current() {
+    return point[current];
+}
+inline void print_current() {
+    get_current()->printTo(lcd);
+}
+void open(uint8_t to_open) {
+    previous[++pr_pos] = to_open;
+    current = to_open;
+    print_current();
+}
+void close() {
+    current = previous[--pr_pos];
+    print_current();
+}
+};  // namespace menu
+
+struct ListMenu : public Menu {
+    char list[4][17] = {"^ Set Time ToDo ", "| Set Alarm Todo", "| Set Cond ToDo ", "# To Do         "};
+    uint8_t i = 0;
+    virtual void listen(InputEvent e) {
+        switch (e.type) {
+            case e.Press:
+                menu::open(1);
+                break;
+            case e.Inc:
+                if (i != 2) i += 1;
+                break;
+            case e.Dec:
+                if (i != 0) i -= 1;
+                break;
+        }
+    }
+    virtual void printTo(LCD1602REG &p) {
+        lcd.setCursor(0, 0);
+        // lcd.clear();
+    }
+    virtual void update(LCD1602REG &p) {
+        lcd.setCursor(0, 0);
+        lcd.print(list[i]);
+        lcd.setCursor(0, 1);
+        lcd.print(list[i + 1]);
+    }
+};
+
+struct SetTurnOn : public Menu {
+    int state = 0;
+    virtual void listen(InputEvent e) {
+        switch (e.type) {
+            case e.Press:
+                // state++;
+                // if (state == 4)
+                menu::close();
+                break;
+            case e.Inc:
+                break;
+            case e.Dec:
+                break;
+        }
+    }
+    virtual void printTo(LCD1602REG &p) {
+        p.setCursor(0, 0);
+        p.print("Slct T to Arm Alarm");
+        p.setCursor(0, 1);
+        p.print("W:* H:**, M:** S:**");
+    }
+    virtual void update(LCD1602REG &p) {
+        printTime(clock.t.time);
+        // p.setCursor(2, 1);
+        // p.print("");
+    }
+};
+
+int DisplayTickFct(int state) {
+    while (!event_queue.is_empty()) {
+        dp_state.get_current()->listen(event_queue.pop());
+    }
+    dp_state.get_current()->update(lcd);
+    return state;
+}
+}  // namespace display
+
+namespace rotary_encoder {
+void fall_clk();
+void fall_dt();
+void interRotEnc(uint8_t clk, uint8_t dt);
+struct RotaryEncoder {
+    RotaryEncoder(uint8_t clk, uint8_t dt, uint8_t sw) : val(0), pin_clk(clk), pin_dt(dt), pin_sw(sw), pr_btn(0) {}
+
+    void begin() {
+        pinMode(pin_clk, INPUT);
+        pinMode(pin_dt, INPUT);
+        pinMode(pin_sw, INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(pin_clk), fall_clk, FALLING);
+        attachInterrupt(digitalPinToInterrupt(pin_dt), fall_dt, FALLING);
+    }
+
+    inline uint8_t read_clk() {
+        return digitalRead(pin_clk);
+    }
+
+    inline uint8_t read_dt() {
+        return digitalRead(pin_dt);
+    }
+
+    inline uint8_t read_sw() {
+        uint8_t tmp = digitalRead(pin_sw);
+        uint8_t res = pr_btn & !tmp;
+        pr_btn = tmp;
+        return res;
+    }
+
+    inline void add(int8_t dir) {
+        val += dir;
+    }
+
+    int8_t clear() {
+        noInterrupts();
+        int8_t tmp = val;
+        val = 0;
+        interrupts();
+        return tmp;
+    }
+    uint8_t pr_btn;
+    uint8_t val;
+    uint8_t pin_clk;
+    uint8_t pin_dt;
+    uint8_t pin_sw;
+};
+
+RotaryEncoder rot_enc(2, 3, 4);
+
+void fall_clk() {
+    interRotEnc(0, rot_enc.read_dt());
+}
+
+void fall_dt() {
+    interRotEnc(rot_enc.read_clk(), 0);
+}
+
+inline void interRotEnc(uint8_t clk, uint8_t dt) {
+    static short dir = 0;
+    if (clk ^ dt) {
+        dir = dt ? -1 : 1;
+    } else if (!(clk & dt)) {
+        rot_enc.add(dir);
+        dir = 0;
+    }
+}
+
+int RE_TickFct(int state) {
+    int8_t tmp = rot_enc.clear();
+    if (tmp > 0)
+        event_queue.push({Event::Inc, (uint8_t)tmp});
+    else if (tmp < 0)
+        event_queue.push({Event::Dec, (uint8_t)-tmp});
+    return state;
+}
+
+int RE_Btn_TickFct(int state) {
+    uint8_t btn = rot_enc.read_sw();
+    if (btn) event_queue.push({Event::Press, 1});
+    return state;
+}
+
+}  // namespace rotary_encoder
+
+namespace tasking {
 struct Task {
     int state;
     uint16_t period;
@@ -172,162 +282,29 @@ struct Task {
     }
 };
 
-LCD1602REG lcd(11, 12, 13);
-DS1307 clock;
-Usonic usonic(3, 4);
+Task tasks[] = {
+        {0, 200, 0, rotary_encoder::RE_TickFct},
+        {0, 50, 0, rotary_encoder::RE_Btn_TickFct},
+        {0, 400, 0, display::DisplayTickFct},
+        {0, 1000, 0, ClockTick}
+    };
 
-int ClockTick(int state) {
-    clock.readTime();
-    printTime(clock.t.time);
-    return state;
+void tick_tasks() {
+    for (auto &task : tasks)
+        if (abs(millis() - task.lastRun) >= task.period) task.tick();
 }
-
-namespace all{
-    struct Saved {
-        TimeBcd turn_on_schedule[7];
-        TimeBcd turn_off_schedule[7];
-    };
-
-    Saved global_state;
-
-    struct Event {
-        enum EventType{Inc, Dec, Press};
-        EventType type;
-        uint8_t val;
-    };
-
-
-    struct Menu {
-        virtual void listen(Event e);
-        virtual void printTo(LCD1602REG& p);
-        virtual void update(LCD1602REG& p);
-    };
-
-    struct DisplayState {
-        Menu* point[20];
-        uint8_t previous[7];
-        uint8_t pr_pos;
-        uint8_t current;
-
-        inline Menu* get_current() {
-            return point[current];
-        }
-
-        inline void open(uint8_t to_open) {
-            previous[++pr_pos] = to_open;
-            current = to_open;
-        }
-
-        inline void close() {
-            current = previous[--pr_pos];
-        }
-    };
-    
-    DisplayState dp_state;
-
-    struct SetTurnOn {
-        int state = 0;
-        virtual void listen(Event e) {
-            switch (e.type) {
-            case e.Press:
-                state++;
-                if (state == 4) dp_state.close();
-                break;
-            case e.Inc:
-                
-                break;
-            case e.Dec:
-                break;
-            }
-        }
-        virtual void printTo(LCD1602REG& p) {
-            p.print("Slct T to Arm Alarm");
-            p.setCursor(0, 1);
-            p.print("W:* H:**, M:** S:**");
-        }
-        virtual void update(LCD1602REG& p) {
-            p.setCursor(2, 1);
-            p.print("");
-        }
-    };
-
-};
-
-#include <avr/interrupt.h>
-
-
-void printTime(TimeBcd time) {
-    lcd.setCursor(0, 0);
-    time.printHours(lcd);
-    lcd.print(":");
-    time.printMinutes(lcd);
-    lcd.print(":");
-    time.printSeconds(lcd);
-    lcd.print("  ");
-    time.printWeekDay(lcd);
-    lcd.setCursor(0, 1);
-    time.printYear(lcd);
-    lcd.print("/");
-    time.printMonth(lcd);
-    lcd.print("/");
-    time.printDay(lcd);
-}
-
-
-class LimitedQueue {
-    uint8_t b, e;
-    uint8_t size;
-
-};
-
-#define A 2
-#define B 3
-short res=0;
-short dir = 0;
-bool a = 0;
-bool b = 0;
-void interRotEnc() {
-    a = digitalRead(A);
-    b = digitalRead(B);
-    if (a && b) {
-        dir = 0;
-    } else if (a ^ b) {
-        dir = b?-1:1;
-    } else {
-        res += dir;
-        dir = 0;
-    }
-}
-
-int TickRotaryEncoder(int state) {
-    lcd.setCursor(0,0);
-    a = digitalRead(A);
-    b = digitalRead(B);
-    lcd.print(res);
-    lcd.print("  ");
-}
-
-#define SW 4
-
-Task tasks[]={
-    {0, 10, 0, TickRotaryEncoder}
-};
+}  // namespace task
 
 void setup() {
-
-	// Set encoder pins as inputs
-	pinMode(A,INPUT);
-	pinMode(B,INPUT);
-	pinMode(SW, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(2), interRotEnc, FALLING);
-    attachInterrupt(digitalPinToInterrupt(3), interRotEnc, FALLING);
-
     Serial.begin(115200);
+    display::Menu *p[2] = {new display::ListMenu(), new display::SetTurnOn()};
+    rotary_encoder::rot_enc.begin();
     lcd.begin();
     clock.begin();
     usonic.begin();
 }
 
 void loop() {
-    for (auto &task : tasks) if (millis() - task.lastRun >= task.period) task.tick();
+    Serial.print("begin");
+    tasking::tick_tasks();
 }
