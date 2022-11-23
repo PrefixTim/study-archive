@@ -1,3 +1,5 @@
+#include <stdint.h>
+#include <Print.h>
 
 #ifndef Mtime_h
 #define Mtime_h
@@ -14,13 +16,13 @@ namespace mtime {
 
         bool operator<(TimeBcd const &other);
         bool isLessTime(TimeBcd const &other);
-        inline void printSeconds(const Print &p);
-        inline void printMinutes(const Print &p);
-        inline void printHours(const Print &p);
-        inline void printWeekDay(const Print &p);
-        inline void printDay(const Print &p);
-        inline void printMonth(const Print &p);
-        inline void printYear(const Print &p);
+        inline void printSeconds(Print &p);
+        inline void printMinutes(Print &p);
+        inline void printHours(Print &p);
+        inline void printWeekDay(Print &p);
+        inline void printDay(Print &p);
+        inline void printMonth(Print &p);
+        inline void printYear(Print &p);
     };
 } // namespace time
 #endif

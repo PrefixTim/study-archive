@@ -1,4 +1,6 @@
+#include <Arduino.h>
 #include "rotaryenc.h"
+#include "glue.h"
 
 namespace rotary_encoder {
     RotaryEncoder::RotaryEncoder(uint8_t clk, uint8_t dt, uint8_t sw) : val(0), pin_clk(clk), pin_dt(dt), pin_sw(sw), pr_btn(0) {}
@@ -11,15 +13,15 @@ namespace rotary_encoder {
         attachInterrupt(digitalPinToInterrupt(pin_dt), fall_dt, FALLING);
     }
 
-    inline RotaryEncoder::uint8_t read_clk() {
+    inline uint8_t RotaryEncoder::read_clk() {
         return digitalRead(pin_clk);
     }
 
-    inline RotaryEncoder::uint8_t read_dt() {
+    inline uint8_t RotaryEncoder::read_dt() {
         return digitalRead(pin_dt);
     }
 
-    inline RotaryEncoder::uint8_t read_sw() {
+    inline uint8_t RotaryEncoder::read_sw() {
         uint8_t tmp = digitalRead(pin_sw);
         uint8_t res = pr_btn & !tmp;
         pr_btn = tmp;
@@ -61,15 +63,15 @@ namespace rotary_encoder {
     int RE_TickFct(int state) {
         int8_t tmp = rot_enc.clear();
         if (tmp > 0)
-            event_queue.push({Event::Inc, (uint8_t)tmp});
+            glue::input_event_queue.push({glue::InputEvent::Inc, (uint8_t)tmp});
         else if (tmp < 0)
-            event_queue.push({Event::Dec, (uint8_t)-tmp});
+            glue::input_event_queue.push({glue::InputEvent::Dec, (uint8_t)-tmp});
         return state;
     }
 
     int RE_Btn_TickFct(int state) {
         uint8_t btn = rot_enc.read_sw();
-        if (btn) event_queue.push({Event::Press, 1});
+        if (btn) glue::input_event_queue.push({glue::InputEvent::Press, 1});
         return state;
     }
 

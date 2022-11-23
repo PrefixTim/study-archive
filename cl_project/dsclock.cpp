@@ -22,7 +22,10 @@ namespace mtime {
         for (auto &i : t.arr) i = Wire.read();
     }
 
-    uint8_t DS1307::getWeekDay();
+    uint8_t DS1307::getWeekDay() {
+        return t.time.week_day;
+    }
+
     bool DS1307::hasPassedFull(TimeBcd time) {
         return time < t.time;
     }

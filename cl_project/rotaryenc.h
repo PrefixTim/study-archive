@@ -1,5 +1,7 @@
-#ifndef Glue_h
-#define Glue_h
+#include <stdint.h>
+
+#ifndef RotaryEncoder_h
+#define RotaryEncoder_h
 namespace rotary_encoder {
 void fall_clk();
 void fall_dt();
@@ -20,40 +22,15 @@ struct RotaryEncoder {
     uint8_t pin_sw;
 };
 
-RotaryEncoder rot_enc(2, 3, 4);
 
-void fall_clk() {
-    interRotEnc(0, rot_enc.read_dt());
-}
+void fall_clk();
+void fall_dt();
+inline void interRotEnc(uint8_t clk, uint8_t dt) ;
 
-void fall_dt() {
-    interRotEnc(rot_enc.read_clk(), 0);
-}
+extern RotaryEncoder rot_enc;
 
-inline void interRotEnc(uint8_t clk, uint8_t dt) {
-    static short dir = 0;
-    if (clk ^ dt) {
-        dir = dt ? -1 : 1;
-    } else if (!(clk & dt)) {
-        rot_enc.add(dir);
-        dir = 0;
-    }
-}
 
-int RE_TickFct(int state) {
-    int8_t tmp = rot_enc.clear();
-    if (tmp > 0)
-        event_queue.push({Event::Inc, (uint8_t)tmp});
-    else if (tmp < 0)
-        event_queue.push({Event::Dec, (uint8_t)-tmp});
-    return state;
-}
-
-int RE_Btn_TickFct(int state) {
-    uint8_t btn = rot_enc.read_sw();
-    if (btn) event_queue.push({Event::Press, 1});
-    return state;
-}
-
+int RE_TickFct(int state);
+int RE_Btn_TickFct(int state);
 }  // namespace rotary_encoder
 #endif

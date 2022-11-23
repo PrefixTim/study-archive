@@ -1,3 +1,4 @@
+#include <stdint.h>
 #ifndef Glue_h
 #define Glue_h
 namespace glue { // contains all the shared variables

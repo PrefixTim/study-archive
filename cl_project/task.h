@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #ifndef Task_H
 #define Task_H
 namespace tasking {

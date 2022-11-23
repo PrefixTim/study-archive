@@ -1,4 +1,5 @@
 #include <Wire.h>
+#include <stdint.h>
 #include "mtime.h"
 
 #ifndef Dsclock_H

@@ -10,36 +10,36 @@ namespace mtime {
         return hours < other.hours || minutes < other.minutes || seconds < other.seconds;
     }
 
-    inline void TimeBcd::printSeconds(const Print &p) {
+    inline void TimeBcd::printSeconds(Print &p) {
         p.print(seconds >> 4 & 0xF);
         p.print(seconds & 0xF);
     }
 
-    inline void TimeBcd::printMinutes(const Print &p) {
+    inline void TimeBcd::printMinutes(Print &p) {
         p.print(minutes >> 4);
         p.print(minutes & 0xF);
     }
 
-    inline void TimeBcd::printHours(const Print &p) {
+    inline void TimeBcd::printHours(Print &p) {
         p.print(hours >> 4 & 0xF);
         p.print(hours & 0xF);
     }
 
-    inline void TimeBcd::printWeekDay(const Print &p) {
+    inline void TimeBcd::printWeekDay(Print &p) {
         p.print(week_days[week_day]);
     }
 
-    inline void TimeBcd::printDay(const Print &p) {
+    inline void TimeBcd::printDay(Print &p) {
         p.print(day >> 4);
         p.print(day & 0xF);
     }
 
-    inline void TimeBcd::printMonth(const Print &p) {
+    inline void TimeBcd::printMonth(Print &p) {
         p.print(month >> 4);
         p.print(month & 0xF);
     }
 
-    inline void TimeBcd::printYear(const Print &p) {
+    inline void TimeBcd::printYear(Print &p) {
         p.print(20);
         p.print(year >> 4);
         p.print(year & 0xF);
