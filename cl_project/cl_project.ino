@@ -1,34 +1,7 @@
 #include <Print.h>
 #include <Wire.h>
-#include "glue.h"
+#include "task.h"
 
-
-
-namespace sensors {
-class Usonic {
-   public:
-    Usonic(uint8_t echo_pin, uint8_t trig_pin) : echo_pin(echo_pin), trig_pin(trig_pin) {}
-
-    void begin() {
-        pinMode(trig_pin, OUTPUT);
-        pinMode(echo_pin, INPUT);
-    }
-
-    inline float readDistance() {
-        digitalWrite(trig_pin, LOW);
-        delayMicroseconds(2);
-        digitalWrite(trig_pin, HIGH);
-        delayMicroseconds(10);
-        digitalWrite(trig_pin, LOW);
-        return pulseIn(echo_pin, HIGH) * 17 / 1000;
-    }
-
-   private:
-    uint8_t echo_pin;
-    uint8_t trig_pin;
-};
-
-}  // namespace sensors
 namespace display {
 class LCD1602REG : public Print {
    public:
@@ -185,118 +158,9 @@ int DisplayTickFct(int state) {
 }
 }  // namespace display
 
-namespace rotary_encoder {
-void fall_clk();
-void fall_dt();
-void interRotEnc(uint8_t clk, uint8_t dt);
-struct RotaryEncoder {
-    RotaryEncoder(uint8_t clk, uint8_t dt, uint8_t sw) : val(0), pin_clk(clk), pin_dt(dt), pin_sw(sw), pr_btn(0) {}
-
-    void begin() {
-        pinMode(pin_clk, INPUT);
-        pinMode(pin_dt, INPUT);
-        pinMode(pin_sw, INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(pin_clk), fall_clk, FALLING);
-        attachInterrupt(digitalPinToInterrupt(pin_dt), fall_dt, FALLING);
-    }
-
-    inline uint8_t read_clk() {
-        return digitalRead(pin_clk);
-    }
-
-    inline uint8_t read_dt() {
-        return digitalRead(pin_dt);
-    }
-
-    inline uint8_t read_sw() {
-        uint8_t tmp = digitalRead(pin_sw);
-        uint8_t res = pr_btn & !tmp;
-        pr_btn = tmp;
-        return res;
-    }
-
-    inline void add(int8_t dir) {
-        val += dir;
-    }
-
-    int8_t clear() {
-        noInterrupts();
-        int8_t tmp = val;
-        val = 0;
-        interrupts();
-        return tmp;
-    }
-    uint8_t pr_btn;
-    uint8_t val;
-    uint8_t pin_clk;
-    uint8_t pin_dt;
-    uint8_t pin_sw;
-};
-
-RotaryEncoder rot_enc(2, 3, 4);
-
-void fall_clk() {
-    interRotEnc(0, rot_enc.read_dt());
-}
-
-void fall_dt() {
-    interRotEnc(rot_enc.read_clk(), 0);
-}
-
-inline void interRotEnc(uint8_t clk, uint8_t dt) {
-    static short dir = 0;
-    if (clk ^ dt) {
-        dir = dt ? -1 : 1;
-    } else if (!(clk & dt)) {
-        rot_enc.add(dir);
-        dir = 0;
-    }
-}
-
-int RE_TickFct(int state) {
-    int8_t tmp = rot_enc.clear();
-    if (tmp > 0)
-        event_queue.push({Event::Inc, (uint8_t)tmp});
-    else if (tmp < 0)
-        event_queue.push({Event::Dec, (uint8_t)-tmp});
-    return state;
-}
-
-int RE_Btn_TickFct(int state) {
-    uint8_t btn = rot_enc.read_sw();
-    if (btn) event_queue.push({Event::Press, 1});
-    return state;
-}
-
-}  // namespace rotary_encoder
-
-namespace tasking {
-struct Task {
-    int state;
-    uint16_t period;
-    uint32_t lastRun;
-    int (*TickFct)(int);
-    void tick() {
-        state = TickFct(state);
-        lastRun = millis();
-    }
-};
-
-Task tasks[] = {
-        {0, 200, 0, rotary_encoder::RE_TickFct},
-        {0, 50, 0, rotary_encoder::RE_Btn_TickFct},
-        {0, 400, 0, display::DisplayTickFct},
-        {0, 1000, 0, ClockTick}
-    };
-
-void tick_tasks() {
-    for (auto &task : tasks)
-        if (abs(millis() - task.lastRun) >= task.period) task.tick();
-}
-}  // namespace task
-
 void setup() {
     Serial.begin(115200);
+    tasking::force_tick_tasks();
     display::Menu *p[2] = {new display::ListMenu(), new display::SetTurnOn()};
     rotary_encoder::rot_enc.begin();
     lcd.begin();
@@ -305,6 +169,5 @@ void setup() {
 }
 
 void loop() {
-    Serial.print("begin");
     tasking::tick_tasks();
 }

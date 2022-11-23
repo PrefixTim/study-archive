@@ -1,7 +1,7 @@
 
 #ifndef Mtime_h
 #define Mtime_h
-namespace time {
+namespace mtime {
     struct TimeBcd {
         static constexpr char week_days[8][4] = {"", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
         uint8_t seconds;
@@ -12,44 +12,15 @@ namespace time {
         uint8_t month;
         uint8_t year;
 
-        bool operator<(TimeBcd const &other) {
-            return year < other.year || month < other.month || day < other.day || hours < other.hours || minutes < other.minutes || seconds < other.seconds;
-        }
-
-        inline void printSeconds(Print &p) {
-            p.print(seconds >> 4 & 0xF);
-            p.print(seconds & 0xF);
-        }
-
-        inline void printMinutes(Print &p) {
-            p.print(minutes >> 4);
-            p.print(minutes & 0xF);
-        }
-
-        inline void printHours(Print &p) {
-            p.print(hours >> 4 & 0xF);
-            p.print(hours & 0xF);
-        }
-
-        inline void printWeekDay(Print &p) {
-            p.print(week_days[week_day]);
-        }
-
-        inline void printDay(Print &p) {
-            p.print(day >> 4);
-            p.print(day & 0xF);
-        }
-
-        inline void printMonth(Print &p) {
-            p.print(month >> 4);
-            p.print(month & 0xF);
-        }
-
-        inline void printYear(Print &p) {
-            p.print(20);
-            p.print(year >> 4);
-            p.print(year & 0xF);
-        }
+        bool operator<(TimeBcd const &other);
+        bool isLessTime(TimeBcd const &other);
+        inline void printSeconds(const Print &p);
+        inline void printMinutes(const Print &p);
+        inline void printHours(const Print &p);
+        inline void printWeekDay(const Print &p);
+        inline void printDay(const Print &p);
+        inline void printMonth(const Print &p);
+        inline void printYear(const Print &p);
     };
 } // namespace time
 #endif
