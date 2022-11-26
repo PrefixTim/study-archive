@@ -1,4 +1,5 @@
 #include "lcd.h"
+
 namespace display {
     LCD1602REG::LCD1602REG(uint8_t ser, uint8_t rclk, uint8_t srclk) : _ser(ser), _rclk(rclk), _srclk(srclk) {}
     void LCD1602REG::begin() {
@@ -15,6 +16,7 @@ namespace display {
     
     void LCD1602REG::send(uint8_t value, uint8_t mode) {
             digitalWrite(_rclk, LOW);
+            noInterrupts();
             for (int8_t i = 7; i >= 0; i--) {
                 digitalWrite(_ser, (value >> i) & 0x1);
                 digitalWrite(_srclk, HIGH);
@@ -22,6 +24,7 @@ namespace display {
             }
             digitalWrite(_ser, mode);
             digitalWrite(_rclk, HIGH);
+            interrupts();
             digitalWrite(_rclk, LOW);
             digitalWrite(_ser, LOW);
         }

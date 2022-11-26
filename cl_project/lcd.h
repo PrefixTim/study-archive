@@ -1,6 +1,6 @@
 #include <Print.h>
-#include <stdint.h>
 #include <Arduino.h>
+#include <stdint.h>
 #ifndef LCD_H
 #define LCD_H
 namespace display {
@@ -9,7 +9,6 @@ namespace display {
         using Print::write;
         LCD1602REG(uint8_t ser, uint8_t rclk, uint8_t srclk);
         void begin();
-        size_t println(void);
         
         inline void setCursor(uint8_t col, uint8_t row) {
             command(0x80 | (col + row * 0x40));

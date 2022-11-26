@@ -1,5 +1,4 @@
 #include "sensors.h"
-#include <Arduino.h>
 
 namespace sensors {
     Usonic::Usonic(uint8_t echo_pin, uint8_t trig_pin) : echo_pin(echo_pin), trig_pin(trig_pin) {}

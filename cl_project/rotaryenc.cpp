@@ -33,7 +33,6 @@ namespace rotary_encoder {
 
     int RE_TickFct(int state) {
         static uint8_t i;
-
         switch (state) {
         case RE_Start:
             i = 0;

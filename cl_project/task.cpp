@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "task.h"
 #include "dsclock.h"
 #include "rotaryenc.h"
@@ -13,8 +12,8 @@ namespace tasking {
 
     Task tasks[] = {
         {mtime::Clock_Start, 1000, UINT32_MAX, mtime::ClockTick},
-        {rotary_encoder::RE_State::RE_Start, 50, UINT32_MAX, rotary_encoder::RE_TickFct},
-        {display::DP_Start, 400, 0, display::DisplayTickFct},
+        {rotary_encoder::RE_Start, 50, UINT32_MAX, rotary_encoder::RE_TickFct},
+        {display::DP_Start, 400, UINT32_MAX, display::DisplayTickFct},
     };
 
     void force_tick_tasks() {
