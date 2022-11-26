@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <stdint.h>
 #include "mtime.h"
+#include <Arduino.h>
 
 #ifndef Dsclock_H
 #define Dsclock_H
@@ -21,6 +22,7 @@ namespace mtime {
     };
     
     extern DS1307 clock;
+    enum Clock_State {Clock_Start, Clock_Run, CLock_Change};
     int ClockTick(int state);
 }
 #endif

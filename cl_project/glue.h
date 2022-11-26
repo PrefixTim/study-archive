@@ -17,8 +17,8 @@ namespace glue { // contains all the shared variables
         }
 
         T pop() {
-            if (is_empty())
-                return;
+            // if (is_empty())
+            //     return;
             T tmp = ptr[b++];
             b %= size;
             return tmp;
@@ -50,7 +50,7 @@ namespace glue { // contains all the shared variables
     struct SensorEvent {
     };
 
-
+    extern uint8_t enable_input;
     extern LimitedQueue<SensorEvent> sensor_event_queue;
     extern LimitedQueue<InputEvent> input_event_queue;
     extern LimitedQueue<TimeEvent> time_event_queue;

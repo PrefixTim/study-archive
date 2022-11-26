@@ -2,6 +2,7 @@
 #include "task.h"
 #include "dsclock.h"
 #include "rotaryenc.h"
+#include "display.h"
 
 
 namespace tasking {
@@ -11,10 +12,9 @@ namespace tasking {
     }
 
     Task tasks[] = {
-        {0, 1000, 0, mtime::ClockTick},
-        {0, 200, 0, rotary_encoder::RE_TickFct},
-        {0, 50, 0, rotary_encoder::RE_Btn_TickFct},
-        // {0, 400, 0, display::DisplayTickFct},
+        {mtime::Clock_Start, 1000, UINT32_MAX, mtime::ClockTick},
+        {rotary_encoder::RE_State::RE_Start, 50, UINT32_MAX, rotary_encoder::RE_TickFct},
+        {display::DP_Start, 400, 0, display::DisplayTickFct},
     };
 
     void force_tick_tasks() {

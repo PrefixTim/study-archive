@@ -1,47 +1,12 @@
-#include  "mtime.h"
+#include "mtime.h"
 namespace mtime {
     constexpr char TimeBcd::week_days[8][4];
-    
+
     bool TimeBcd::operator<(TimeBcd const &other) {
         return year < other.year || month < other.month || day < other.day || isLessTime(other);
     }
-    
-    inline bool TimeBcd::isLessTime(TimeBcd const &other) {
-        return hours < other.hours || minutes < other.minutes || seconds < other.seconds;
-    }
 
-    inline void TimeBcd::printSeconds(Print &p) {
-        p.print(seconds >> 4 & 0xF);
-        p.print(seconds & 0xF);
-    }
-
-    inline void TimeBcd::printMinutes(Print &p) {
-        p.print(minutes >> 4);
-        p.print(minutes & 0xF);
-    }
-
-    inline void TimeBcd::printHours(Print &p) {
-        p.print(hours >> 4 & 0xF);
-        p.print(hours & 0xF);
-    }
-
-    inline void TimeBcd::printWeekDay(Print &p) {
-        p.print(week_days[week_day]);
-    }
-
-    inline void TimeBcd::printDay(Print &p) {
-        p.print(day >> 4);
-        p.print(day & 0xF);
-    }
-
-    inline void TimeBcd::printMonth(Print &p) {
-        p.print(month >> 4);
-        p.print(month & 0xF);
-    }
-
-    inline void TimeBcd::printYear(Print &p) {
-        p.print(20);
-        p.print(year >> 4);
-        p.print(year & 0xF);
+    TimeBcd dec_to_bcd(uint8_t seconds, uint8_t minutes, uint8_t hours, uint8_t week_day, uint8_t day, uint8_t month, uint8_t year) {
+        return {dec2bcd(seconds), dec2bcd(minutes), dec2bcd(hours), week_day, dec2bcd(day), dec2bcd(month), dec2bcd(year)};
     }
 }
