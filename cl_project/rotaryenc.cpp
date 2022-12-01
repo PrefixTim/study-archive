@@ -1,6 +1,5 @@
 #include "rotaryenc.h"
 #include "glue.h"
-#include <Arduino.h>
 
 namespace rotary_encoder {
     RotaryEncoder::RotaryEncoder(uint8_t clk, uint8_t dt, uint8_t sw) : val(0), pin_clk(clk), pin_dt(dt), pin_sw(sw), pr_btn(0) {}

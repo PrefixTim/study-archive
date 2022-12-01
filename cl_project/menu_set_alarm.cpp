@@ -24,5 +24,4 @@ namespace display {
             lcd.home();
             lcd.print(state);
         }
-
 } // namespace display

@@ -1,12 +1,11 @@
 #include "list_menu.h"
-
+#include <Arduino.h>
 namespace display {
-    // Entry::Entry(char _text[16], uint8_t _p) : text(_text), p(_p) {}
-    ListMenu::ListMenu(Entry _list[], uint8_t _size) : list(_list), size(_size) {}
+    ListMenu::ListMenu(Entry *_list[], uint8_t _size) : list(_list), size(_size) {}
     void ListMenu::listen(glue::InputEvent e) {
         switch (e.type) {
         case e.Press:
-            menu.open(list[i].p);
+            menu.open(list[i]->p);
             break;
         case e.Inc:
             if (i != size - 1)
@@ -30,9 +29,9 @@ namespace display {
     void ListMenu::update() {
         lcd.setCursor(0, 0);
         lcd.print(offset ? " " : "#");
-        lcd.print(list[i + offset].text);
+        lcd.print(list[i + offset]->text);
         lcd.setCursor(0, 1);
         lcd.print(offset ? "#" : " ");
-        lcd.print(list[i + offset + 1].text);
+        lcd.print(list[i + offset + 1]->text);
     }
 } // namespace display

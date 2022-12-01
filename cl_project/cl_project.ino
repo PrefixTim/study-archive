@@ -1,4 +1,5 @@
 #include "task.h"
+#include <LiquidCrystal.h>
 
 void setup() {
     Serial.begin(115200);

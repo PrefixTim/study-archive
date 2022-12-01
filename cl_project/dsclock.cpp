@@ -37,7 +37,16 @@ namespace mtime {
     DS1307 clock;
 
     int ClockTick(int state) {
-        clock.readTime();
+        switch (state)
+        {
+        case Clock_Start:
+            clock.begin();
+            state = Clock_Run;
+            break;
+        case Clock_Run: 
+            clock.readTime();
+            break;
+        }
         return state;
     }
 }

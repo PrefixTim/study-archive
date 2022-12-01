@@ -9,14 +9,14 @@ namespace glue { // contains all the shared variables
             ptr = new T[size];
         }
 
-        void push(T v) {
+        inline void push(T v) {
             ptr[e++] = v;
             e %= size;
             if (e == b)
                 b = (b + 1) % size;
         }
 
-        T pop() {
+        inline T pop() {
             // if (is_empty())
             //     return;
             T tmp = ptr[b++];
@@ -24,7 +24,7 @@ namespace glue { // contains all the shared variables
             return tmp;
         }
 
-        uint8_t is_empty() {
+        inline uint8_t is_empty() {
             return b == e;
         }
 
@@ -38,7 +38,8 @@ namespace glue { // contains all the shared variables
         enum EventType {
             Inc,
             Dec,
-            Press
+            Press,
+            Trig
         };
         EventType type;
         uint8_t val;
@@ -50,9 +51,13 @@ namespace glue { // contains all the shared variables
     struct SensorEvent {
     };
 
-    extern uint8_t enable_input;
+    extern uint8_t passwd_dgt_enterd;
+    extern bool flag_armed;
+    extern bool enable_input;
+    extern bool clock_change;
     extern LimitedQueue<SensorEvent> sensor_event_queue;
     extern LimitedQueue<InputEvent> input_event_queue;
+    extern LimitedQueue<uint8_t> pass_event_queue;
     extern LimitedQueue<TimeEvent> time_event_queue;
 } // namespace glue
 #endif

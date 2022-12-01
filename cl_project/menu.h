@@ -1,9 +1,6 @@
 #include "glue.h"
 #include "lcd.h"
 
-#include <Arduino.h>
-
-
 #ifndef Menu_h
 #define Menu_h
 namespace display {

@@ -25,10 +25,10 @@ namespace display {
         uint8_t i = 0;
         int8_t offset = 0;
         uint8_t size;
-        Entry *list;
+        Entry **list;
 
-        ListMenu(Entry _list[], uint8_t _size);
-        static uint8_t _new(Entry _list[], uint8_t _size) {
+        ListMenu(Entry *_list[], uint8_t _size);
+        static uint8_t _new(Entry *_list[], uint8_t _size) {
             return menu.add(new ListMenu(_list, _size));
         }
         virtual void listen(glue::InputEvent e);

@@ -1,20 +1,16 @@
-#include <Arduino.h>
 #include <stdint.h>
 
 #include "display.h"
 #include "glue.h"
 #include "list_menu.h"
 #include "menu.h"
+#include "menu_main.h"
 #include "menu_set_alarm.h"
-
 
 namespace display {
     void start();
     LCD1602REG lcd(11, 12, 13);
 
-    Component *tmp1[10] = {};
-    uint8_t tmp2[10] = {};
-    Menu menu(tmp1, tmp2);
 
     int DisplayTickFct(int state) {
         switch (state) {
@@ -29,15 +25,19 @@ namespace display {
         return state;
     }
 
-    void start() {
-        uint8_t i = 0;
-        lcd.begin();
-        Entry a = {"Se Alarm OnTime", AlarmOnSet::_new()};
-        Entry b = {"Back           ", BackComp::_new()};
-        Entry e[2] = {a, b};
-        // Entry e[2] = { {"Se Alarm OnTime", AlarmOnSet::_new()}, {"Back           ", BackComp::_new()}}; //Fuck
+    Component *tmp1[10] = {};
+    uint8_t tmp2[10] = {};
+    Menu menu(tmp1, tmp2);
 
-        ListMenu::_new(e, 2);
+    Entry a = {"Set Alarm  Time", AlarmOnSet::_new()};
+    Entry b = {"Set Clock      ", AlarmOnSet::_new()};
+    Entry c = {"Back           ", BackComp::_new()};
+    Entry *e[3] = {&a, &b, &c};
+
+    void start() {
+        lcd.begin();
+        // Entry e[2] = { {"Se Alarm OnTime", AlarmOnSet::_new()}, {"Back           ", BackComp::_new()}}; //Fuck
+        MenuMain::_new(ListMenu::_new(e, 3));
         menu.get_current()->start();
     }
 } // namespace display

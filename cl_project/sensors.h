@@ -16,7 +16,7 @@ namespace sensors {
             delayMicroseconds(10);
             digitalWrite(trig_pin, LOW);
             float res = pulseIn(echo_pin, HIGH) * 17 / 1000;
-            interrupts();
+            interrupts(); q
             return res;
         }
 
