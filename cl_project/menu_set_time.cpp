@@ -17,15 +17,18 @@ namespace display {
         } else {
             if (i == 0) {
                 h += e.type == e.Inc ? e.val : -e.val;
-                if (h > 100) h = 24;
+                if (h > 100)
+                    h = 24;
                 h %= 25;
             } else if (i == 1) {
                 m += e.type == e.Inc ? e.val : -e.val;
-                if (m > 100) m = 59;
+                if (m > 100)
+                    m = 59;
                 m %= 60;
             } else if (i == 2) {
                 s += e.type == e.Inc ? e.val : -e.val;
-                if (s > 100) s = 59;
+                if (s > 100)
+                    s = 59;
                 s %= 60;
             } else {
                 if (e.type == e.Inc) {
@@ -50,14 +53,14 @@ namespace display {
     void SetTimeMenu::update() {
         if (i < 3) {
             lcd.setCursor(2, 1);
-            lcd.print(h/10);
-            lcd.print(h%10);
+            lcd.print(h / 10);
+            lcd.print(h % 10);
             lcd.setCursor(7, 1);
-            lcd.print(m/10);
-            lcd.print(m%10);
+            lcd.print(m / 10);
+            lcd.print(m % 10);
             lcd.setCursor(12, 1);
-            lcd.print(s/10);
-            lcd.print(s%10);
+            lcd.print(s / 10);
+            lcd.print(s % 10);
         } else {
             lcd.setCursor(0, 0);
             lcd.print("Change?        ");
@@ -80,15 +83,18 @@ namespace display {
         } else {
             if (i == 0) {
                 y += e.type == e.Inc ? e.val : -e.val;
-                if (y > 150) y = 99;
+                if (y > 150)
+                    y = 99;
                 y %= 100;
             } else if (i == 1) {
                 m += e.type == e.Inc ? e.val : -e.val;
-                if (m > 100) m = 12;
+                if (m > 100)
+                    m = 12;
                 m %= 13;
             } else if (i == 2) {
                 d += e.type == e.Inc ? e.val : -e.val;
-                if (d > 100) d = 31;
+                if (d > 100)
+                    d = 31;
                 d %= 31;
             } else {
                 if (e.type == e.Inc) {
@@ -113,14 +119,14 @@ namespace display {
     void SetDateMenu::update() {
         if (i < 3) {
             lcd.setCursor(2, 1);
-            lcd.print(y/10);
-            lcd.print(y%10);
+            lcd.print(y / 10);
+            lcd.print(y % 10);
             lcd.setCursor(7, 1);
-            lcd.print(m/10);
-            lcd.print(m%10);
+            lcd.print(m / 10);
+            lcd.print(m % 10);
             lcd.setCursor(12, 1);
-            lcd.print(d/10);
-            lcd.print(d%10);
+            lcd.print(d / 10);
+            lcd.print(d % 10);
         } else {
             lcd.setCursor(0, 0);
             lcd.print("Change?        ");
