@@ -2,25 +2,16 @@
 #include "glue.h"
 namespace mtime {
     void DS1307::begin() {
-        Serial.print("Wire");
         Wire.begin(0x68);
     }
 
     void DS1307::writeTime(TimeBcd time) {
-        time.printSeconds(Serial);
-        time.printMinutes(Serial);
-        time.printHours(Serial);
-        time.printWeekDay(Serial);
-        time.printDay(Serial);
-        time.printMonth(Serial);
-        time.printYear(Serial);
-
+        t.time = time;
         Wire.beginTransmission(0x68);
         Wire.write(0);
         for (auto i : t.arr)
             Wire.write(i);
         Wire.endTransmission();
-        t.time = time;
     }
 
     void DS1307::readTime() {
@@ -30,7 +21,6 @@ namespace mtime {
         Wire.requestFrom(0x68, 7);
         for (auto &i : t.arr) {
             i = Wire.read();
-            Serial.println(i);
         }
     }
 
@@ -61,7 +51,6 @@ namespace mtime {
             }
             break;
         case Clock_Change:
-        Serial.println("ch");
             auto tmp = glue::set_time_queue.pop();
             clock.writeTime({
                 tmp.s != 128 ? dec2bcd(tmp.s) : clock.t.time.seconds,
@@ -69,7 +58,7 @@ namespace mtime {
                 tmp.h != 128 ? dec2bcd(tmp.h) : clock.t.time.hours,
                 clock.t.time.week_day,
                 tmp.d != 128 ? dec2bcd(tmp.d) : clock.t.time.day,
-                tmp.m != 128 ? dec2bcd(tmp.n) : clock.t.time.month,
+                tmp.n != 128 ? dec2bcd(tmp.n) : clock.t.time.month,
                 tmp.y != 128 ? dec2bcd(tmp.y) : clock.t.time.year,
 
             });
