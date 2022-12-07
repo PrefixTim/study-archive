@@ -1,7 +1,7 @@
-#include <Wire.h>
-#include <stdint.h>
 #include "mtime.h"
 #include <Arduino.h>
+#include <Wire.h>
+#include <stdint.h>
 
 #ifndef Dsclock_H
 #define Dsclock_H
@@ -20,9 +20,11 @@ namespace mtime {
         bool hasPassedFull(TimeBcd time);
         bool hasPassedTime(TimeBcd time);
     };
-    
+
     extern DS1307 clock;
-    enum Clock_State {Clock_Start, Clock_Run, CLock_Change};
+    enum Clock_State { Clock_Start,
+                       Clock_Run,
+                       Clock_Change };
     int ClockTick(int state);
 }
 #endif

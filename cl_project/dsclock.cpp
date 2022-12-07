@@ -1,11 +1,20 @@
 #include "dsclock.h"
-
+#include "glue.h"
 namespace mtime {
     void DS1307::begin() {
-        Wire.begin();
+        Serial.print("Wire");
+        Wire.begin(0x68);
     }
 
     void DS1307::writeTime(TimeBcd time) {
+        time.printSeconds(Serial);
+        time.printMinutes(Serial);
+        time.printHours(Serial);
+        time.printWeekDay(Serial);
+        time.printDay(Serial);
+        time.printMonth(Serial);
+        time.printYear(Serial);
+
         Wire.beginTransmission(0x68);
         Wire.write(0);
         for (auto i : t.arr)
@@ -19,7 +28,10 @@ namespace mtime {
         Wire.write(0);
         Wire.endTransmission();
         Wire.requestFrom(0x68, 7);
-        for (auto &i : t.arr) i = Wire.read();
+        for (auto &i : t.arr) {
+            i = Wire.read();
+            Serial.println(i);
+        }
     }
 
     uint8_t DS1307::getWeekDay() {
@@ -29,22 +41,39 @@ namespace mtime {
     bool DS1307::hasPassedFull(TimeBcd time) {
         return time < t.time;
     }
-    
+
     bool DS1307::hasPassedTime(TimeBcd time) {
         return time.isLessTime(time);
     }
-    
+
     DS1307 clock;
 
     int ClockTick(int state) {
-        switch (state)
-        {
+        switch (state) {
         case Clock_Start:
             clock.begin();
             state = Clock_Run;
             break;
-        case Clock_Run: 
+        case Clock_Run:
             clock.readTime();
+            if (!glue::set_time_queue.is_empty()) {
+                state = Clock_Change;
+            }
+            break;
+        case Clock_Change:
+        Serial.println("ch");
+            auto tmp = glue::set_time_queue.pop();
+            clock.writeTime({
+                tmp.s != 128 ? dec2bcd(tmp.s) : clock.t.time.seconds,
+                tmp.m != 128 ? dec2bcd(tmp.m) : clock.t.time.minutes,
+                tmp.h != 128 ? dec2bcd(tmp.h) : clock.t.time.hours,
+                clock.t.time.week_day,
+                tmp.d != 128 ? dec2bcd(tmp.d) : clock.t.time.day,
+                tmp.m != 128 ? dec2bcd(tmp.n) : clock.t.time.month,
+                tmp.y != 128 ? dec2bcd(tmp.y) : clock.t.time.year,
+
+            });
+            state = Clock_Run;
             break;
         }
         return state;

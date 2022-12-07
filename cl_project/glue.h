@@ -45,19 +45,36 @@ namespace glue { // contains all the shared variables
         uint8_t val;
     };
 
-    struct TimeEvent {
+    struct LockReq {
+        enum ReqType {
+            Lock,
+            Unlock
+        };
+        ReqType type;
     };
 
+    struct SetTimeStr {
+        uint8_t s;
+        uint8_t m;
+        uint8_t h;
+        uint8_t d;
+        uint8_t n;
+        uint8_t y;
+    };
     struct SensorEvent {
     };
 
     extern uint8_t passwd_dgt_enterd;
     extern bool flag_armed;
     extern bool enable_input;
-    extern bool clock_change;
     extern LimitedQueue<SensorEvent> sensor_event_queue;
     extern LimitedQueue<InputEvent> input_event_queue;
+    extern LimitedQueue<SetTimeStr> set_time_queue;
     extern LimitedQueue<uint8_t> pass_event_queue;
-    extern LimitedQueue<TimeEvent> time_event_queue;
+    extern LimitedQueue<LockReq> lock_req_queue;
+
+    inline bool is_armed() { return flag_armed; }
+    inline void arm() { flag_armed = true; }
+    inline void disarm() { flag_armed = false; }
 } // namespace glue
 #endif
