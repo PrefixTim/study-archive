@@ -1,8 +1,8 @@
 #include <stdint.h>
 
+#include "alarm.h"
 #include "display.h"
 #include "glue.h"
-#include "alarm.h"
 #include "list_menu.h"
 #include "menu.h"
 #include "menu_main.h"
@@ -11,7 +11,6 @@
 namespace display {
     void start();
     LCD1602REG lcd(11, 12, 13);
-
 
     int DisplayTickFct(int state) {
         switch (state) {
@@ -30,16 +29,23 @@ namespace display {
     uint8_t tmp2[10] = {};
     Menu menu(tmp1, tmp2);
 
-    Entry a = {"Lock           ", AlarmToLock::_new()};
-    Entry b = {"Set Time       ", SetTimeMenu::_new()};
-    Entry c = {"Set Date       ", SetDateMenu::_new()};
-    Entry d = {"Back           ", BackComp::_new()};
-    Entry *e[4] = {&a, &b, &c, &d};
+    uint8_t back = BackComp::_new();
+    Entry s1 = {"Set Time       ", SetTimeMenu::_new()};
+    Entry s2 = {"Set Date       ", SetDateMenu::_new()};
+    Entry s3 = {"Set Pass       ", AlarmSetPasswd::_new()};
+    Entry s4 = {"Back           ", back};
+    Entry *set[4] = {&s1, &s2, &s3, &s4};
+
+    Entry m1 = {"Lock           ", AlarmToLock::_new()};
+    Entry m2 = {"Settings       ", ListMenu::_new(set, 4)};
+    Entry m3 = {"Back           ", back};
+
+    Entry *m[3] = {&m1, &m2, &m3};
 
     void start() {
         lcd.begin();
+        MenuMain::_new(ListMenu::_new(m, 3), AlarmToUnLock::_new());
         // Entry e[2] = { {"Se Alarm OnTime", AlarmOnSet::_new()}, {"Back           ", BackComp::_new()}}; //Fuck
-        MenuMain::_new(ListMenu::_new(e, 4));
         menu.get_current()->start();
     }
 } // namespace display

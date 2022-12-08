@@ -19,9 +19,8 @@ namespace mtime {
         Wire.write(0);
         Wire.endTransmission();
         Wire.requestFrom(0x68, 7);
-        for (auto &i : t.arr) {
+        for (auto &i : t.arr)
             i = Wire.read();
-        }
     }
 
     uint8_t DS1307::getWeekDay() {

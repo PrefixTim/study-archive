@@ -39,7 +39,8 @@ namespace glue { // contains all the shared variables
             Inc,
             Dec,
             Press,
-            Trig
+            Trig,
+            Num
         };
         EventType type;
         uint8_t val;
@@ -64,13 +65,11 @@ namespace glue { // contains all the shared variables
     struct SensorEvent {
     };
 
-    extern uint8_t passwd_dgt_enterd;
     extern bool flag_armed;
     extern bool enable_input;
     extern LimitedQueue<SensorEvent> sensor_event_queue;
     extern LimitedQueue<InputEvent> input_event_queue;
     extern LimitedQueue<SetTimeStr> set_time_queue;
-    extern LimitedQueue<uint8_t> pass_event_queue;
     extern LimitedQueue<LockReq> lock_req_queue;
 
     inline bool is_armed() { return flag_armed; }

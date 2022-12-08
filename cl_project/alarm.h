@@ -17,5 +17,25 @@ namespace display {
         virtual void start();
         virtual void update();
     };
+    struct AlarmToUnLock : public Component {
+        uint8_t i;
+        AlarmToUnLock();
+        static uint8_t _new() {
+            return menu.add(new AlarmToUnLock());
+        }
+        virtual void listen(glue::InputEvent e);
+        virtual void start();
+        virtual void update();
+    };
+    struct AlarmSetPasswd : public Component {
+        uint8_t i;
+        AlarmSetPasswd();
+        static uint8_t _new() {
+            return menu.add(new AlarmSetPasswd());
+        }
+        virtual void listen(glue::InputEvent e);
+        virtual void start();
+        virtual void update();
+    };
 } // namespace display
 #endif
