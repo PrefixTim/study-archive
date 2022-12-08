@@ -1,6 +1,7 @@
 #include <stdint.h>
 
 #include "alarm.h"
+#include "alarm_sch.h"
 #include "display.h"
 #include "glue.h"
 #include "list_menu.h"
@@ -25,7 +26,7 @@ namespace display {
         return state;
     }
 
-    Component *tmp1[10] = {};
+    Component *tmp1[15] = {};
     uint8_t tmp2[10] = {};
     Menu menu(tmp1, tmp2);
 
@@ -34,11 +35,12 @@ namespace display {
     Entry s2 = {"Set Date       ", SetDateMenu::_new()};
     Entry s3 = {"Set Week Day   ", SetWeekDayMeny::_new()};
     Entry s4 = {"Set Pass       ", AlarmSetPasswd::_new()};
-    Entry s5 = {"Back           ", back};
-    Entry *set[] = {&s1, &s2, &s3, &s4, &s5};
+    Entry s5 = {"Set Schedule   ", AlarmSetMenu::_new()};
+    Entry s6 = {"Back           ", back};
+    Entry *set[] = {&s1, &s2, &s3, &s4, &s5, &s6};
 
     Entry m1 = {"Lock           ", AlarmToLock::_new()};
-    Entry m2 = {"Settings       ", ListMenu::_new(set, 5)};
+    Entry m2 = {"Settings       ", ListMenu::_new(set, 6)};
     Entry m3 = {"Back           ", back};
 
     Entry *m[] = {&m1, &m2, &m3};

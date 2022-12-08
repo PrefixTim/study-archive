@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "mtime.h"
 #ifndef Glue_h
 #define Glue_h
 namespace glue { // contains all the shared variables
@@ -66,8 +67,14 @@ namespace glue { // contains all the shared variables
     struct SensorEvent {
     };
 
+    struct Schedule {
+        mtime::TimeBcd turn_on_schedule[7];
+        mtime::TimeBcd turn_off_schedule[7];
+    };
+
     extern bool flag_armed;
     extern bool enable_input;
+    extern Schedule schedule;
     extern LimitedQueue<SensorEvent> sensor_event_queue;
     extern LimitedQueue<InputEvent> input_event_queue;
     extern LimitedQueue<SetTimeStr> set_time_queue;
