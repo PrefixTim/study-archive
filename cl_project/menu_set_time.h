@@ -28,5 +28,16 @@ namespace display {
         virtual void start();
         virtual void update();
     };
+
+    struct SetWeekDayMeny : public Component {
+        uint8_t w = 0;
+        uint8_t i = 0;
+        static uint8_t _new() {
+            return menu.add(new SetWeekDayMeny());
+        }
+        virtual void listen(glue::InputEvent e);
+        virtual void start();
+        virtual void update();
+    };
 } // namespace display
 #endif

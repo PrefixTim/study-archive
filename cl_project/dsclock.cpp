@@ -55,7 +55,7 @@ namespace mtime {
                 tmp.s != 128 ? dec2bcd(tmp.s) : clock.t.time.seconds,
                 tmp.m != 128 ? dec2bcd(tmp.m) : clock.t.time.minutes,
                 tmp.h != 128 ? dec2bcd(tmp.h) : clock.t.time.hours,
-                clock.t.time.week_day,
+                tmp.w != 128 ? dec2bcd(tmp.w) : clock.t.time.week_day,
                 tmp.d != 128 ? dec2bcd(tmp.d) : clock.t.time.day,
                 tmp.n != 128 ? dec2bcd(tmp.n) : clock.t.time.month,
                 tmp.y != 128 ? dec2bcd(tmp.y) : clock.t.time.year,

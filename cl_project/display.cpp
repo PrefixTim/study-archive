@@ -32,15 +32,16 @@ namespace display {
     uint8_t back = BackComp::_new();
     Entry s1 = {"Set Time       ", SetTimeMenu::_new()};
     Entry s2 = {"Set Date       ", SetDateMenu::_new()};
-    Entry s3 = {"Set Pass       ", AlarmSetPasswd::_new()};
-    Entry s4 = {"Back           ", back};
-    Entry *set[4] = {&s1, &s2, &s3, &s4};
+    Entry s3 = {"Set Week Day   ", SetWeekDayMeny::_new()};
+    Entry s4 = {"Set Pass       ", AlarmSetPasswd::_new()};
+    Entry s5 = {"Back           ", back};
+    Entry *set[] = {&s1, &s2, &s3, &s4, &s5};
 
     Entry m1 = {"Lock           ", AlarmToLock::_new()};
-    Entry m2 = {"Settings       ", ListMenu::_new(set, 4)};
+    Entry m2 = {"Settings       ", ListMenu::_new(set, 5)};
     Entry m3 = {"Back           ", back};
 
-    Entry *m[3] = {&m1, &m2, &m3};
+    Entry *m[] = {&m1, &m2, &m3};
 
     void start() {
         lcd.begin();

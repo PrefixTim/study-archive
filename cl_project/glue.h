@@ -61,6 +61,7 @@ namespace glue { // contains all the shared variables
         uint8_t d;
         uint8_t n;
         uint8_t y;
+        uint8_t w;
     };
     struct SensorEvent {
     };

@@ -27,6 +27,8 @@ namespace display {
         lcd.setCursor(0, 0);
         lcd.print(glue::is_armed() ? "Locked   " : "Unlocked ");
         lcd.setCursor(0, 1);
+        mtime::clock.t.time.printWeekDay(lcd);
+        lcd.print(" ");
         mtime::clock.t.time.printHours(lcd);
         lcd.print(":");
         mtime::clock.t.time.printMinutes(lcd);
