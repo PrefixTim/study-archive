@@ -4,12 +4,12 @@ trait GraphSearchAlgorim {
 
     fn search(&mut self) -> Result<Solution, ()> {
         let problem = self.get_problem();
-        let mut frontier : Vec<Node> = vec![problem.get_initial_state()];
+        let mut frontier : Vec<Node> = vec![problem.get_initial_node()];
         
         loop {
             if frontier.is_empty() {return Err(());}
             let node = frontier.pop().unwrap();
-            if problem.get_goal_state() == node {return Ok(Solution::new(Vec::new()));}
+            if problem.get_goal_node() == node {return Ok(Solution::new(Vec::new()));}
             frontier.append(self.queueingf(&node).as_mut());
             self.mark_visited(node);
         }
