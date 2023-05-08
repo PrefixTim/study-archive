@@ -37,17 +37,17 @@ impl Npuzle {
 }
 
 impl Problem for Npuzle {
-    fn get_initial_node(&self) -> &Node {
-        &0.into()
+    fn get_initial_node(&self) -> Node {
+        0.into()
     }
 
-    fn get_goal_node(&self) -> &Node {
-        &1.into()
+    fn get_goal_node(&self) -> Node {
+        1.into()
     }
 
-    fn expand(&self, node: &Node) -> Vec<Node> {
+    fn expand(&mut self, node: &Node) -> Vec<Node> {
         // up
-        let s = self.state_set.get(node.id as usize).unwrap();
+        let s = self.state_set.get(node.id as usize).unwrap().clone();
         let mut res = Vec::new();
         let pos: usize = s.iter().position(|n| n==&0).unwrap();
         if pos >= self.n {
