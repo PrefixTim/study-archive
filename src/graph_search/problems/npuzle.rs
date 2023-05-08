@@ -139,16 +139,20 @@ pub fn misplaced_tile_heuristic(state: &Vec<i32>) -> f64 {
         .enumerate()
         .filter(|(i, &e)| e != (((i + 1) % state.len()) as i32))
         .count() as f64
-    }
-
-pub fn euclidean_distance_heuristic(state: &Vec<i32>) -> f64 {
-    0f64
 }
 
-//   0 1 2 j
-// 0 1 2 3
-// 1 4 5 6
-// 2 7 8 0
-// i
-
-// (j+1+i*n)%n
+pub fn euclidean_distance_heuristic(state: &Vec<i32>) -> f64 {
+    let n = (state.len() as f64).sqrt() as i32;
+    state
+        .iter()
+        .enumerate()
+        .map(|(i, &e)| {
+            let (x1, y1, x2, y2);
+            x1 = e % n;
+            y1 = e / n;
+            x2 = (i + 1) as i32 % n;
+            y2 = (i + 1) as i32 / n;
+            (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) as f64).sqrt()
+        })
+        .sum()
+}
