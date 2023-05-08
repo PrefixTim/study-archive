@@ -1,16 +1,18 @@
-pub trait Node<'a, State>: SearchNode {
-    fn get_state() -> State;
+use crate::graph_search::algorithms::node_wrap::NodeWrapper;
+
+pub trait Node<'a>: SearchNode + Into<NodeWrapper<'a>> + Clone + From<NodeWrapper<'a>> {
+    type State: Ord;
+    fn get_state() -> Self::State;
     fn get_parent() -> Option<&'a Self>;
 }
 
-pub type BSearchNode<'a> = Box<&'a dyn SearchNode>;
-pub trait SearchNode: Ord {
+pub trait SearchNode {
     fn get_cost(&self) -> f64;
     fn get_depth(&self) -> i64;
 }
 pub trait Problem<'a> {
     type State;
-    type Node: Node<'a, Self::State>;
+    type Node: Node<'a, State = Self::State>;
     type Solution;
     fn solve() -> Solution<Self::State>;
 
@@ -26,38 +28,23 @@ pub struct Solution<T> {
 }
 
 impl<T> Solution<T> {
-    pub fn new(sol: Vec<T>, stats: SolutionStats) -> Self { Self { sol, stats } }
+    pub fn new(sol: Vec<T>, stats: SolutionStats) -> Self {
+        Self { sol, stats }
+    }
 }
 
-pub struct SolutionStats{
-    pub expanded: i32,
-    pub max_queue: i32,
-    pub goal_depth: i32,
+pub struct SolutionStats {
+    pub expanded: i64,
+    pub max_queue: i64,
+    pub goal_depth: i64,
 }
 
 impl SolutionStats {
-    pub fn new(expanded: i32, max_queue: i32, goal_depth: i32) -> Self { Self { expanded, max_queue, goal_depth } }
+    pub fn new(expanded: i64, max_queue: i64, goal_depth: i64) -> Self {
+        Self {
+            expanded,
+            max_queue,
+            goal_depth,
+        }
+    }
 }
-
-
-// impl Solution {
-//     pub fn new(sol: Vec<Vec<i32>>, expanded: i32, max_queue: i32, goal_depth: i32) -> Self {
-//         Self {
-//             sol,
-//             expanded,
-//             max_queue,
-//             goal_depth,
-//         }
-//     }
-//     pub fn print(&self) {
-//         println!(
-//             "To solve this problem the search algorithm expanded a total of {} nodes.",
-//             self.expanded
-//         );
-//         println!(
-//             "The maximum number of nodes in the queue at any one time:  {}.",
-//             self.max_queue
-//         );
-//         println!("The depth of the goal node was {}.", self.goal_depth);
-//     }
-// }

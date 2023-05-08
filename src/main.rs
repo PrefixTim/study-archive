@@ -61,3 +61,25 @@ fn main() -> io::Result<()> {
 
     Ok(())
 }
+
+
+  //     fn print_expand(&self, node: &Node) {
+    //         println!(
+    //             "The best state to expand with g(n) = {} and h(n) = {} is...",
+    //             node.cost, node.heuristic
+    //         );
+    //         self.get_problem().print_node(&node);
+    //         println!("Expanding this node\n");
+    //     }
+
+    //     pub fn print(&self) {
+//         println!(
+//             "To solve this problem the search algorithm expanded a total of {} nodes.",
+//             self.expanded
+//         );
+//         println!(
+//             "The maximum number of nodes in the queue at any one time:  {}.",
+//             self.max_queue
+//         );
+//         println!("The depth of the goal node was {}.", self.goal_depth);
+//     }
