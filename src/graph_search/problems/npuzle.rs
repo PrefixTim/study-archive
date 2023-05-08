@@ -33,104 +33,104 @@ impl Npuzle {
     // }
 }
 
-impl Problem for Npuzle {
-    fn get_initial_node(&self) -> Node {
-        let mut n: Node = Node::new(0, 0f64, None);
-        n.set_heuristic(self.get_heuristic_node(&n));
-        n
-    }
+// impl Problem for Npuzle {
+//     fn get_initial_node(&self) -> Node {
+//         let mut n: Node = Node::new(0, 0f64, None);
+//         n.set_heuristic(self.get_heuristic_node(&n));
+//         n
+//     }
 
-    fn get_goal_node(&self) -> Node {
-        let mut n: Node = Node::new(1, 0f64, None);
-        n.set_heuristic(self.get_heuristic_node(&n));
-        n
-    }
+//     fn get_goal_node(&self) -> Node {
+//         let mut n: Node = Node::new(1, 0f64, None);
+//         n.set_heuristic(self.get_heuristic_node(&n));
+//         n
+//     }
 
-    fn expand(&mut self, node: &Node) -> Vec<Node> {
-        // up
-        let s = self.state_set.get(node.id as usize).unwrap().clone();
-        let mut res = Vec::new();
-        let pos: usize = s.iter().position(|n| n == &0).unwrap();
-        let mut n: Node;
-        if pos >= self.n {
-            let mut n_state = s.clone();
-            n_state.swap(pos, pos - self.n);
-            let exist = self.state_set.iter().position(|n| n == &n_state);
-            if let Some(i) = exist {
-                n = Node::new(i, node.cost + 1f64, Some(node.id));
-            } else {
-                n = Node::new(self.state_set.len(), node.cost + 1f64, Some(node.id));
-                self.state_set.push(n_state);
-            }
-            n.set_heuristic(self.get_heuristic_node(&n));
-            res.push(n)
-        }
-        if pos % self.n != 0 {
-            let mut n_state = s.clone();
-            n_state.swap(pos, pos - 1);
-            let exist = self.state_set.iter().position(|n| n == &n_state);
-            if let Some(i) = exist {
-                n = Node::new(i, node.cost + 1f64, Some(node.id));
-            } else {
-                n = Node::new(self.state_set.len(), node.cost + 1f64, Some(node.id));
-                self.state_set.push(n_state);
-            }
-            n.set_heuristic(self.get_heuristic_node(&n));
-            res.push(n)
-        }
-        if pos + self.n < self.n * self.n {
-            let mut n_state = s.clone();
-            n_state.swap(pos, pos + self.n);
-            let exist = self.state_set.iter().position(|n| n == &n_state);
-            if let Some(i) = exist {
-                n = Node::new(i, node.cost + 1f64, Some(node.id));
-            } else {
-                n = Node::new(self.state_set.len(), node.cost + 1f64, Some(node.id));
-                self.state_set.push(n_state);
-            }
-            n.set_heuristic(self.get_heuristic_node(&n));
-            res.push(n)
-        }
-        if pos % self.n != self.n - 1 {
-            let mut n_state = s.clone();
-            n_state.swap(pos, pos + 1);
-            let exist = self.state_set.iter().position(|n| n == &n_state);
-            if let Some(i) = exist {
-                n = Node::new(i, node.cost + 1f64, Some(node.id));
-            } else {
-                n = Node::new(self.state_set.len(), node.cost + 1f64, Some(node.id));
-                self.state_set.push(n_state);
-            }
-            n.set_heuristic(self.get_heuristic_node(&n));
-            res.push(n)
-        }
-        res
-    }
+//     fn expand(&mut self, node: &Node) -> Vec<Node> {
+//         // up
+//         let s = self.state_set.get(node.id as usize).unwrap().clone();
+//         let mut res = Vec::new();
+//         let pos: usize = s.iter().position(|n| n == &0).unwrap();
+//         let mut n: Node;
+//         if pos >= self.n {
+//             let mut n_state = s.clone();
+//             n_state.swap(pos, pos - self.n);
+//             let exist = self.state_set.iter().position(|n| n == &n_state);
+//             if let Some(i) = exist {
+//                 n = Node::new(i, node.cost + 1f64, Some(node.id));
+//             } else {
+//                 n = Node::new(self.state_set.len(), node.cost + 1f64, Some(node.id));
+//                 self.state_set.push(n_state);
+//             }
+//             n.set_heuristic(self.get_heuristic_node(&n));
+//             res.push(n)
+//         }
+//         if pos % self.n != 0 {
+//             let mut n_state = s.clone();
+//             n_state.swap(pos, pos - 1);
+//             let exist = self.state_set.iter().position(|n| n == &n_state);
+//             if let Some(i) = exist {
+//                 n = Node::new(i, node.cost + 1f64, Some(node.id));
+//             } else {
+//                 n = Node::new(self.state_set.len(), node.cost + 1f64, Some(node.id));
+//                 self.state_set.push(n_state);
+//             }
+//             n.set_heuristic(self.get_heuristic_node(&n));
+//             res.push(n)
+//         }
+//         if pos + self.n < self.n * self.n {
+//             let mut n_state = s.clone();
+//             n_state.swap(pos, pos + self.n);
+//             let exist = self.state_set.iter().position(|n| n == &n_state);
+//             if let Some(i) = exist {
+//                 n = Node::new(i, node.cost + 1f64, Some(node.id));
+//             } else {
+//                 n = Node::new(self.state_set.len(), node.cost + 1f64, Some(node.id));
+//                 self.state_set.push(n_state);
+//             }
+//             n.set_heuristic(self.get_heuristic_node(&n));
+//             res.push(n)
+//         }
+//         if pos % self.n != self.n - 1 {
+//             let mut n_state = s.clone();
+//             n_state.swap(pos, pos + 1);
+//             let exist = self.state_set.iter().position(|n| n == &n_state);
+//             if let Some(i) = exist {
+//                 n = Node::new(i, node.cost + 1f64, Some(node.id));
+//             } else {
+//                 n = Node::new(self.state_set.len(), node.cost + 1f64, Some(node.id));
+//                 self.state_set.push(n_state);
+//             }
+//             n.set_heuristic(self.get_heuristic_node(&n));
+//             res.push(n)
+//         }
+//         res
+//     }
 
-    fn get_heuristic_node(&self, node: &Node) -> f64 {
-        let state = self.state_set.get(node.id).unwrap();
-        let h = self.heuristic;
-        h(state)
-    }
+//     fn get_heuristic_node(&self, node: &Node) -> f64 {
+//         let state = self.state_set.get(node.id).unwrap();
+//         let h = self.heuristic;
+//         h(state)
+//     }
 
-    fn print_node(&self, node: &Node) {
-        let s = self.state_set.get(node.id as usize).unwrap().clone();
-        for i in 0..self.n {
-            for j in 0..self.n {
-                print!("{} ", s[i * self.n + j]);
-            }
-            println!("");
-        }
-    }
+//     fn print_node(&self, node: &Node) {
+//         let s = self.state_set.get(node.id as usize).unwrap().clone();
+//         for i in 0..self.n {
+//             for j in 0..self.n {
+//                 print!("{} ", s[i * self.n + j]);
+//             }
+//             println!("");
+//         }
+//     }
 
-    fn get_trace(&self, nodes: &Vec<Node>) -> Vec<Vec<i32>>{
-        let mut res = Vec::new();
-        for node in nodes {
-            res.push(self.state_set.get(node.id).unwrap().clone());
-        }
-        res
-    }
-}
+//     fn get_trace(&self, nodes: &Vec<Node>) -> Vec<Vec<i32>>{
+//         let mut res = Vec::new();
+//         for node in nodes {
+//             res.push(self.state_set.get(node.id).unwrap().clone());
+//         }
+//         res
+//     }
+// }
 
 pub fn zero_heuristic(state: &Vec<i32>) -> f64 {
     0f64
