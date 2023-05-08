@@ -1,12 +1,12 @@
-use super::node_wrap::NodeWrapper;
+use super::node_wrap::LightNode;
 use super::problem_trait::{Problem, SearchNode, SolutionStats};
 use std::collections::BTreeSet;
 
 pub fn graph_search<'a>(
     problem: &mut impl Problem<'a>,
-) -> Result<(SolutionStats, NodeWrapper<'a>), ()> {
-    let mut frontier: BTreeSet<NodeWrapper> = BTreeSet::new();
-    let mut visited: BTreeSet<NodeWrapper> = BTreeSet::new();
+) -> Result<(SolutionStats, LightNode), ()> {
+    let mut frontier: BTreeSet<LightNode> = BTreeSet::new();
+    let mut visited: BTreeSet<LightNode> = BTreeSet::new();
 
     frontier.insert(problem.get_initial_node().clone().into());
 
@@ -41,7 +41,7 @@ pub fn graph_search<'a>(
             .map(|e| e.into())
             .filter(|n| !visited.contains(n))
             .filter(|n| !frontier.contains(n))
-            .collect::<Vec<NodeWrapper>>();
+            .collect::<Vec<LightNode>>();
         nodes.into_iter().for_each(|e| {frontier.insert(e);});
         visited.insert(node.into());
     }

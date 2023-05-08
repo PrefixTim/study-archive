@@ -1,6 +1,6 @@
-use super::node_wrap::NodeWrapper;
+use super::node_wrap::LightNode;
 
-pub trait Node<'a>: SearchNode + Into<NodeWrapper<'a>> + Clone + From<NodeWrapper<'a>> {
+pub trait Node<'a>: SearchNode + Into<LightNode> + Clone + From<LightNode> {
     type State: Ord;
     fn get_state() -> Self::State;
     fn get_parent() -> Option<&'a Self>;

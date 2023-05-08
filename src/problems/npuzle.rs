@@ -1,9 +1,48 @@
-use super::problem_trait::{Node, Problem};
+use super::{
+    node_wrap::LightNode,
+    problem_trait::{Node, Problem, SearchNode},
+};
 
-type State = Vec<i32>;
+#[derive(Clone)]
+pub struct NpNode {}
+
+impl<'a> Node<'a> for NpNode {
+    type State = Vec<i32>;
+
+    fn get_state() -> Self::State {
+        todo!()
+    }
+
+    fn get_parent() -> Option<&'a Self> {
+        todo!()
+    }
+}
+
+impl<'a> Into<LightNode> for NpNode {
+    fn into(self) -> LightNode {
+        todo!()
+    }
+}
+
+impl<'a> From<LightNode> for NpNode {
+    fn from(value: LightNode) -> Self {
+        todo!()
+    }
+}
+
+impl SearchNode for NpNode {
+    fn get_cost(&self) -> f64 {
+        todo!()
+    }
+
+    fn get_depth(&self) -> i64 {
+        todo!()
+    }
+}
+
 pub struct Npuzle {
     n: usize,
-    state_set: Vec<State>,
+    // state_set: Vec<State>,
     heuristic: fn(&Vec<i32>) -> f64, // ops: Vec<Operator>
 }
 
@@ -20,7 +59,7 @@ impl Npuzle {
         let gs = tmp;
         Ok(Self {
             n: n,
-            state_set: Vec::from([is, gs]),
+            // state_set: Vec::from([is, gs]),
             heuristic: heuristic, // ops: Vec::new()
         })
     }
