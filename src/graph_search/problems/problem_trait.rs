@@ -1,5 +1,5 @@
 
-#[derive(Eq, PartialEq, Clone, Hash)]
+#[derive(Eq, PartialEq, Clone, Hash, Debug)]
 pub struct Node {
     pub id: usize
 }

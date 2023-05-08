@@ -31,8 +31,8 @@ impl GraphSearchAlgorim for UniCostSearch {
         self.problem
             .expand(node)
             .into_iter()
-            .filter(|n| self.visited.contains(n))
-            .filter(|n| frontier.contains(n))
+            .filter(|n| !self.visited.contains(n))
+            .filter(|n| !frontier.contains(n))
             .collect()
     }
 }

@@ -5,4 +5,7 @@ use super::problems::problem_trait;
 
 struct AstarMth;
 struct AstarEdh;
-struct UniformCost;
+
+pub fn zero_heuristic(state: &Vec<i32>) -> i32 {
+    0
+}
