@@ -8,10 +8,11 @@ use graph_search::{
 };
 use std::io;
 
+use crate::graph_search::problems::problem_trait::Problem;
+
 //1, 2, 3, 4, 8, 0, 7, 6, 5
 fn main() -> io::Result<()> {
-
-    println!("Welcome to  8 puzzle solver. Enter your own puzzle");
+    println!("Welcome to 862311452; 8 puzzle solver. Enter your own puzzle");
 
     let mut buffer = String::new();
 
@@ -22,10 +23,12 @@ fn main() -> io::Result<()> {
         .map(|s| s.parse().unwrap())
         .collect::<Vec<i32>>();
 
-    println!("Enter your choice of algorithm
+    println!(
+        "Enter your choice of algorithm
     Uniform Cost Search
     A* with the Misplaced Tile heuristic.
-    A* with the Euclidean distance heuristic.");
+    A* with the Euclidean distance heuristic."
+    );
 
     buffer = String::new();
     io::stdin().read_line(&mut buffer)?;
@@ -40,12 +43,20 @@ fn main() -> io::Result<()> {
         }
     };
 
-    let puzle = Npuzle::new(init_s, heu).unwrap();
-
-    let mut search = Astar::new(Box::new(puzle));
+    let n = (init_s.len() as f64).sqrt() as usize;
+    let mut search = Astar::new(Box::new(Npuzle::new(init_s, heu).unwrap()));
 
     if let Ok(sol) = search.search() {
-    sol.print();
+        sol.print();
+        for i in 0..n {
+            for s in (&sol.sol).iter().rev() {
+                for j in 0..n {
+                    print!("{} ", s[i * n + j]);
+                }
+                print!("   ");
+            }
+            println!("   ");
+        }
     } else {
         println!("Failed to reach a goal state");
     }

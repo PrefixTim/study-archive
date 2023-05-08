@@ -25,7 +25,12 @@ pub trait GraphSearchAlgorim {
         
             if self.get_problem().get_goal_node() == node {
                 println!("Goal!!!");
-                return Ok(Solution::new(Vec::new(), expanded, max_queue, node.cost as i32));
+                let cost = node.cost;
+                let mut trace = vec![node.clone()];
+                while let Some(node) = self.trace(trace.last().unwrap()) {
+                    trace.push(node.clone());
+                }
+                return Ok(Solution::new(self.get_problem().get_trace(&trace), expanded, max_queue, cost as i32));
             }
         
             frontier.append(self.queueingf(&node, &frontier).as_mut());
@@ -38,7 +43,7 @@ pub trait GraphSearchAlgorim {
     fn reset(&mut self);
     fn mark_visited(&mut self, node: Node);
     fn queueingf(&mut self, node: &Node, frontier: &Vec<Node>) -> Vec<Node>;
-
+    fn trace(&self, node: &Node) -> Option<&Node> ;
     fn print_expand(&self, node: &Node) {
         println!(
             "The best state to expand with g(n) = {} and h(n) = {} is...",

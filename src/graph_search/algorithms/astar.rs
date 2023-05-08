@@ -35,4 +35,13 @@ impl GraphSearchAlgorim for Astar {
             .filter(|n| !frontier.contains(n))
             .collect::<Vec<Node>>()
     }
+    
+    fn trace(&self, node: &Node) -> Option<&Node> {
+        if let Some(id) = node.parent {
+            let s = self.visited.iter().position(|e| e.id==id).unwrap();
+            Some(self.visited.get(s).unwrap())
+        } else {
+            None
+        }
+    }
 }
