@@ -2,12 +2,12 @@ use crate::graph_search::problems::problem_trait::{Node, Problem};
 
 use super::graph_algo_trait::GraphSearchAlgorim;
 
-pub struct UniCostSearch {
+pub struct Astar {
     problem: Box<dyn Problem>,
     visited: Vec<Node>,
 }
 
-impl GraphSearchAlgorim for UniCostSearch {
+impl GraphSearchAlgorim for Astar {
     fn new(problem: Box<dyn Problem>) -> Self {
         Self {
             problem: problem,
@@ -33,6 +33,6 @@ impl GraphSearchAlgorim for UniCostSearch {
             .into_iter()
             .filter(|n| !self.visited.contains(n))
             .filter(|n| !frontier.contains(n))
-            .collect()
+            .collect::<Vec<Node>>()
     }
 }
