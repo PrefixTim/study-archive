@@ -1,4 +1,4 @@
-mod graph_search;
+mod problems;
 
 // use graph_search::{
 //     algorithms::{astar::Astar, graph_algo_trait::GraphSearchAlgorim},

@@ -1,4 +1,4 @@
-use crate::graph_search::algorithms::node_wrap::NodeWrapper;
+use super::node_wrap::NodeWrapper;
 
 pub trait Node<'a>: SearchNode + Into<NodeWrapper<'a>> + Clone + From<NodeWrapper<'a>> {
     type State: Ord;

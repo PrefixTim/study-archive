@@ -1,7 +1,5 @@
 use std::cmp::Ordering;
 
-use crate::graph_search::problems::problem_trait::Problem;
-
 use super::problem_trait::SearchNode;
 
 pub struct NodeWrapper<'a> {
