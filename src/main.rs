@@ -8,6 +8,7 @@ use std::io::{self};
 use crate::problems::problem_trait::{PrintTrace, Problem, Solution};
 
 //1, 2, 3, 4, 8, 0, 7, 6, 5
+//1, 0, 3, 4, 2, 6, 7, 5, 8
 fn main() {
     println!("Welcome to 862311452; 8 puzzle solver. Enter your own puzzle");
     let (init_s, heuristic) = get_input();
