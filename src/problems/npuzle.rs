@@ -93,7 +93,6 @@ pub struct Npuzle {
     state_set: Vec<NpNode>,
     heuristic: fn(&NpState) -> f64,
     print: bool,
-    existance_set: HashSet<usize>
 }
 
 impl Npuzle {
@@ -118,7 +117,6 @@ impl Npuzle {
             state_set: Vec::from([init_node, goal_node]),
             heuristic: heuristic,
             print: print,
-            existance_set: HashSet::new()
         })
     }
 
