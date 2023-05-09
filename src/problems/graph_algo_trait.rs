@@ -1,14 +1,14 @@
+use crate::problems::problem_trait::Node;
+
 use super::node_wrap::LightNode;
-use super::problem_trait::{Problem, SearchNode, SolutionStats};
+use super::problem_trait::{Problem, SolutionStats};
 use std::collections::BTreeSet;
 
-pub fn graph_search<'a>(
-    problem: &mut impl Problem<'a>,
-) -> Result<(SolutionStats, LightNode), ()> {
+pub fn graph_search<'a>(problem: &mut impl Problem<'a>) -> Result<(SolutionStats, LightNode), ()> {
     let mut frontier: BTreeSet<LightNode> = BTreeSet::new();
     let mut visited: BTreeSet<LightNode> = BTreeSet::new();
 
-    frontier.insert(problem.get_initial_node().clone().into());
+    frontier.insert((&problem.get_node(0).clone()).into());
 
     println!("Expanding state:");
     // p.print_node(frontier.);
@@ -24,7 +24,9 @@ pub fn graph_search<'a>(
         expanded += 1;
         max_queue = max_queue.max(frontier.len() as i64);
 
-        let node = frontier.pop_first().unwrap().into();
+        let node = &problem
+            .get_node(frontier.pop_first().unwrap().get_id())
+            .partial_clone();
 
         //             self.print_expand(&node);
 
@@ -36,13 +38,15 @@ pub fn graph_search<'a>(
             ));
         }
         let nodes = problem
-            .expand(&node)
+            .expand(node)
             .into_iter()
-            .map(|e| e.into())
+            .map(|e| (&e).into())
             .filter(|n| !visited.contains(n))
             .filter(|n| !frontier.contains(n))
             .collect::<Vec<LightNode>>();
-        nodes.into_iter().for_each(|e| {frontier.insert(e);});
+        nodes.into_iter().for_each(|e| {
+            frontier.insert(e);
+        });
         visited.insert(node.into());
     }
 }

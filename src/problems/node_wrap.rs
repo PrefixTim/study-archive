@@ -1,13 +1,25 @@
 use std::cmp::Ordering;
+
+use super::problem_trait::Node;
 pub struct LightNode {
-    id: i64,
+    id: usize,
     round_cost: i64,
 }
 
-impl<'a> LightNode {
-    pub fn new(id: i64, cost: f64) -> Self {
+impl LightNode {
+    pub fn new(id: usize, cost: f64) -> Self {
         let round_cost = (cost * 1000.) as i64;
         Self { id, round_cost }
+    }
+
+    pub fn get_id(&self) -> usize{
+        self.id
+    }
+}
+
+impl<'a, T> From<&T> for LightNode where T: Node<'a>{
+    fn from(value: &T) -> Self {
+        LightNode::new(value.get_id(), value.get_cost())
     }
 }
 

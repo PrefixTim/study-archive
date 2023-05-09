@@ -83,3 +83,13 @@ fn main() -> io::Result<()> {
 //         );
 //         println!("The depth of the goal node was {}.", self.goal_depth);
 //     }
+
+//     fn print_node(&self, node: &Node) {
+//         let s = self.state_set.get(node.id as usize).unwrap().clone();
+//         for i in 0..self.n {
+//             for j in 0..self.n {
+//                 print!("{} ", s[i * self.n + j]);
+//             }
+//             println!("");
+//         }
+//     }

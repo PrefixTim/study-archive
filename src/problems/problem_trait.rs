@@ -1,36 +1,29 @@
-use super::node_wrap::LightNode;
-
-pub trait Node<'a>: SearchNode + Into<LightNode> + Clone + From<LightNode> {
-    type State: Ord;
-    fn get_state() -> Self::State;
-    fn get_parent() -> Option<&'a Self>;
-}
-
-pub trait SearchNode {
+pub trait Node<'a>: Clone {
+    type State;
+    fn get_state(&self) -> &Self::State;
+    fn get_parent(&self) -> Option<&'a Self>;
+    fn get_id(&self) -> usize;
     fn get_cost(&self) -> f64;
     fn get_depth(&self) -> i64;
+    fn partial_clone(&self) -> Self;
 }
 pub trait Problem<'a> {
     type State;
     type Node: Node<'a, State = Self::State>;
-    type Solution;
-    fn solve() -> Solution<Self::State>;
+    type Solution: Solution<State=Self::State>;
 
-    fn get_initial_node(&self) -> &Self::Node;
+    fn solve(&mut self) -> Self::Solution;
+    fn get_node(&self, id: usize) -> &Self::Node;
     fn is_goal_node(&self, node: &Self::Node) -> bool;
     fn expand(&mut self, node: &Self::Node) -> Vec<Self::Node>;
     fn print_node(&self, node: &Self::Node);
 }
 
-pub struct Solution<T> {
-    pub sol: Vec<T>,
-    pub stats: SolutionStats,
-}
-
-impl<T> Solution<T> {
-    pub fn new(sol: Vec<T>, stats: SolutionStats) -> Self {
-        Self { sol, stats }
-    }
+pub trait Solution {
+    type State;
+    fn get_trace(&self) -> Vec<Self::State>;
+    fn get_stats(&self) -> SolutionStats;
+    // fn new(sol: Vec<Self::State>, stats: SolutionStats) -> Self;
 }
 
 pub struct SolutionStats {
