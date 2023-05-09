@@ -24,25 +24,26 @@ pub fn graph_search<'a>(problem: &mut impl Problem<'a>) -> Result<(SolutionStats
         expanded += 1;
         max_queue = max_queue.max(frontier.len() as i64);
 
-        let node = &problem
-            .get_node(frontier.pop().unwrap().get_id())
-            .partial_clone();
+        let node = problem.get_node(frontier.pop().unwrap().get_id()).clone();
 
-        //             self.print_expand(&node);
+        problem.print_expand(&node);
 
         if problem.is_goal_node(&node) {
-            // println!("Goal!!!");
+            println!("Goal!!!");
             return Ok((
                 SolutionStats::new(expanded, max_queue, node.get_depth()),
-                node.into(),
+                (&node).into(),
             ));
         }
+
         problem
-            .expand(node)
+            .expand(&node)
             .into_iter()
             .map(|n| n.into())
             .filter(|n| !visited.contains(n))
-            .for_each(|n| {frontier.push(n);});
-        visited.push(node.into());
+            .for_each(|n| {
+                frontier.push(n);
+            });
+        visited.push((&node).into());
     }
 }

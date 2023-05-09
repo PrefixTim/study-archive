@@ -5,25 +5,28 @@ pub trait Node<'a>: Clone {
     fn get_cost(&self) -> f64;
     fn get_depth(&self) -> i64;
     fn partial_clone(&self) -> Self;
+    fn print(&self);
+    fn print_line(&self, i: usize);
+
 }
 pub trait Problem<'a> {
     type State;
     type Node: Node<'a, State = Self::State>;
-    type Solution: Solution<State=Self::State>;
-    
-    fn solve(&mut self) -> Result<Self::Solution, ()> ;
+    type Solution: Solution<Node = Self::Node>;
+
+    fn solve(&mut self) -> Result<Self::Solution, ()>;
     fn get_node(&self, id: usize) -> &Self::Node;
-    fn get_node_parent(&self, node: &Self::Node) -> Option<&'a Self::Node>;
+    fn get_node_parent(&self, node: &Self::Node) -> Option<& Self::Node>;
     fn is_goal_node(&self, node: &Self::Node) -> bool;
     fn expand(&mut self, node: &Self::Node) -> Vec<&Self::Node>;
-    fn print_node(&self, node: &Self::Node);
+
+    fn print_expand(&self, node: &Self::Node);
 }
 
 pub trait Solution {
-    type State;
-    fn get_trace(&self) -> &Vec<Self::State>;
+    type Node;
+    fn get_trace(&self) -> &Vec<Self::Node>;
     fn get_stats(&self) -> &SolutionStats;
-    // fn new(sol: Vec<Self::State>, stats: SolutionStats) -> Self;
 }
 #[derive(Debug)]
 pub struct SolutionStats {
@@ -40,4 +43,21 @@ impl SolutionStats {
             goal_depth,
         }
     }
+
+    pub fn print_stats(&self) {
+        println!(
+            "To solve this problem the search algorithm expanded a total of {} nodes.",
+            self.expanded
+        );
+        println!(
+            "The maximum number of nodes in the queue at any one time:  {}.",
+            self.max_queue
+        );
+        println!("The depth of the goal node was {}.", self.goal_depth);
+    }
+}
+
+
+pub trait PrintTrace {
+    fn print_trace(&self);
 }
