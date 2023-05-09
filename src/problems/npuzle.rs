@@ -1,22 +1,24 @@
+use std::mem;
+
 use super::problem_trait::{Node, Problem, Solution, SolutionStats};
 
 type State = Vec<i64>;
 #[derive(Clone)]
-pub struct NpNode<'a> {
+pub struct NpNode {
     id: usize,
     state: State,
     depth: i64,
     heuristic: f64,
-    parent: Option<&'a Self>,
+    parent: Option<usize>,
 }
 
-impl<'a> NpNode<'a> {
+impl NpNode {
     pub fn new(
         id: usize,
         state: State,
         depth: i64,
         heuristic: f64,
-        parent: Option<&'a Self>,
+        parent: Option<usize>,
     ) -> Self {
         Self {
             id,
@@ -28,16 +30,13 @@ impl<'a> NpNode<'a> {
     }
 }
 
-impl<'a> Node<'a> for NpNode<'a> {
+impl<'a> Node<'a> for NpNode {
     type State = State;
 
     fn get_state(&self) -> &Self::State {
         &self.state
     }
 
-    fn get_parent(&self) -> Option<&'a Self> {
-        self.parent
-    }
 
     fn get_id(&self) -> usize {
         self.id
@@ -64,22 +63,22 @@ pub struct NpSolution {
 impl Solution for NpSolution {
     type State = State;
 
-    fn get_trace(&self) -> Vec<Self::State> {
-        self.trace
+    fn get_trace(&self) -> &Vec<Self::State> {
+        &self.trace
     }
 
-    fn get_stats(&self) -> SolutionStats {
-        self.stats
+    fn get_stats(&self) -> &SolutionStats {
+        &self.stats
     }
 }
 
-pub struct Npuzle<'a> {
+pub struct Npuzle {
     n: usize,
-    state_set: Vec<NpNode<'a>>,
+    state_set: Vec<NpNode>,
     heuristic: fn(&Vec<i64>) -> f64,
 }
 
-impl<'a> Npuzle<'a> {
+impl Npuzle {
     pub fn new(init_state: Vec<i64>, heuristic: fn(&Vec<i64>) -> f64) -> Result<Self, ()> {
         let n = (init_state.len() as f64).sqrt().floor() as usize;
         let nn = n * n;
@@ -102,33 +101,40 @@ impl<'a> Npuzle<'a> {
         })
     }
 
-    fn oper(&mut self, node: &NpNode, pos: usize, n_pos: usize) -> &NpNode {
+    fn oper(&mut self, node: &NpNode, pos: usize, n_pos: usize) -> usize {
         let heuristic = self.heuristic;
-        let new_node: NpNode;
+        let new_node: &NpNode;
         let mut n_state = node.state.clone();
         n_state.swap(pos, n_pos);
 
         let exist = self.state_set.iter().position(|n| n.state == n_state);
-
+        let h_val = heuristic(&n_state);
         if let Some(i) = exist {
-            new_node = NpNode::new(i, n_state, node.depth + 1, heuristic(&n_state), Some(node));
+            let old_node = self.state_set.get(i).unwrap();
+            if old_node.get_cost() > node.depth as f64 + 1. + h_val {
+                let mut update_node = old_node.clone();
+                update_node.depth = node.depth + 1;
+                update_node.heuristic = h_val;
+                update_node.parent = Some(node.id);
+                let _ = std::mem::replace(&mut self.state_set[i], update_node);
+            }
+            i
         } else {
-            new_node = NpNode::new(
+            self.state_set.push(NpNode::new(
                 self.state_set.len(),
                 n_state,
                 node.depth + 1,
-                heuristic(&n_state),
-                Some(node),
-            );
-            self.state_set.push(new_node);
+                h_val,
+                Some(node.id),
+            ));
+            self.state_set.len() - 1
         }
-        &new_node
     }
 }
 
-impl<'a> Problem<'a> for Npuzle<'a> {
+impl<'a> Problem<'a> for Npuzle {
     type State = State;
-    type Node = NpNode<'a>;
+    type Node = NpNode;
     type Solution = NpSolution;
 
     fn solve(&mut self) -> Self::Solution {
@@ -152,26 +158,34 @@ impl<'a> Problem<'a> for Npuzle<'a> {
         self.state_set.get(id).unwrap()
     }
 
+    fn get_node_parent(&self, node: &Self::Node) -> Option<&'a Self::Node> {
+        todo!()
+    }
+
     fn expand(&mut self, node: &Self::Node) -> Vec<&Self::Node> {
-        let mut res: Vec<&NpNode> = Vec::new();
+        let mut res: Vec<usize> = Vec::new();
         let mut n: NpNode;
 
-        let node: &Self::Node = self.state_set.get(node.id).unwrap();
+        let node: &Self::Node = &self.state_set.get(node.id).unwrap().clone();
         let pos: usize = node.state.iter().position(|n| n == &0).unwrap();
 
-        if pos >= self.n { //Up
+        if pos >= self.n {
+            //Up
             res.push(self.oper(node, pos, pos - self.n));
         }
-        if pos % self.n != 0 { //Left
+        if pos % self.n != 0 {
+            //Left
             res.push(self.oper(node, pos, pos - 1));
         }
-        if pos + self.n < self.n * self.n { //Down
+        if pos + self.n < self.n * self.n {
+            //Down
             res.push(self.oper(node, pos, pos + self.n));
         }
-        if pos % self.n != self.n - 1 { //Right
+        if pos % self.n != self.n - 1 {
+            //Right
             res.push(self.oper(node, pos, pos + 1));
         }
-        res
+        res.into_iter().map(|e| self.state_set.get(e).unwrap()).collect()
     }
 
     fn is_goal_node(&self, node: &Self::Node) -> bool {

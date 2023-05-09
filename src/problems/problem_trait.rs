@@ -1,7 +1,6 @@
 pub trait Node<'a>: Clone {
     type State;
     fn get_state(&self) -> &Self::State;
-    fn get_parent(&self) -> Option<&'a Self>;
     fn get_id(&self) -> usize;
     fn get_cost(&self) -> f64;
     fn get_depth(&self) -> i64;
@@ -11,9 +10,10 @@ pub trait Problem<'a> {
     type State;
     type Node: Node<'a, State = Self::State>;
     type Solution: Solution<State=Self::State>;
-
+    
     fn solve(&mut self) -> Self::Solution;
     fn get_node(&self, id: usize) -> &Self::Node;
+    fn get_node_parent(&self, node: &Self::Node) -> Option<&'a Self::Node>;
     fn is_goal_node(&self, node: &Self::Node) -> bool;
     fn expand(&mut self, node: &Self::Node) -> Vec<&Self::Node>;
     fn print_node(&self, node: &Self::Node);
@@ -21,8 +21,8 @@ pub trait Problem<'a> {
 
 pub trait Solution {
     type State;
-    fn get_trace(&self) -> Vec<Self::State>;
-    fn get_stats(&self) -> SolutionStats;
+    fn get_trace(&self) -> &Vec<Self::State>;
+    fn get_stats(&self) -> &SolutionStats;
     // fn new(sol: Vec<Self::State>, stats: SolutionStats) -> Self;
 }
 
