@@ -11,7 +11,7 @@ pub trait Problem<'a> {
     type Node: Node<'a, State = Self::State>;
     type Solution: Solution<State=Self::State>;
     
-    fn solve(&mut self) -> Self::Solution;
+    fn solve(&mut self) -> Result<Self::Solution, ()> ;
     fn get_node(&self, id: usize) -> &Self::Node;
     fn get_node_parent(&self, node: &Self::Node) -> Option<&'a Self::Node>;
     fn is_goal_node(&self, node: &Self::Node) -> bool;
@@ -25,7 +25,7 @@ pub trait Solution {
     fn get_stats(&self) -> &SolutionStats;
     // fn new(sol: Vec<Self::State>, stats: SolutionStats) -> Self;
 }
-
+#[derive(Debug)]
 pub struct SolutionStats {
     pub expanded: i64,
     pub max_queue: i64,

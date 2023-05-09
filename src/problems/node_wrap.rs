@@ -1,6 +1,7 @@
-use std::cmp::Ordering;
+use std::cmp::{Ordering, Reverse};
 
 use super::problem_trait::Node;
+#[derive(Debug, Clone)]
 pub struct LightNode {
     id: usize,
     round_cost: i64,
@@ -25,7 +26,7 @@ impl<'a, T> From<&T> for LightNode where T: Node<'a>{
 
 impl Ord for LightNode {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.round_cost.cmp(&other.round_cost)
+        Reverse(self.round_cost).cmp(&Reverse(other.round_cost))
     }
 }
 
@@ -37,7 +38,7 @@ impl PartialOrd for LightNode {
 
 impl PartialEq for LightNode {
     fn eq(&self, other: &Self) -> bool {
-        self.round_cost == other.round_cost
+        self.id == other.id
     }
 }
 

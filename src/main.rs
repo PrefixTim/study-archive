@@ -5,6 +5,8 @@ use problems::npuzle::{
 };
 use std::io;
 
+use crate::problems::problem_trait::Problem;
+
 //1, 2, 3, 4, 8, 0, 7, 6, 5
 fn main() -> io::Result<()> {
     println!("Welcome to 862311452; 8 puzzle solver. Enter your own puzzle");
@@ -16,7 +18,7 @@ fn main() -> io::Result<()> {
         .trim()
         .split(", ")
         .map(|s| s.parse().unwrap())
-        .collect::<Vec<i32>>();
+        .collect::<Vec<i64>>();
 
     println!(
         "Enter your choice of algorithm
@@ -38,9 +40,10 @@ fn main() -> io::Result<()> {
         }
     };
 
-    let n = (init_s.len() as f64).sqrt() as usize;
-    // let mut search = Astar::new(Box::new(Npuzle::new(init_s, heu).unwrap()));
-
+    // let n: usize = (init_s.len() as f64).sqrt() as usize;
+    let mut search = Npuzle::new(init_s, heu).unwrap();
+    let res = search.solve().unwrap();
+    println!("{:?}", res);
     // if let Ok(sol) = search.search() {
     //     sol.print();
     //     for i in 0..n {
