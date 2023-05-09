@@ -40,7 +40,7 @@ pub fn graph_search<'a>(problem: &mut impl Problem<'a>) -> Result<(SolutionStats
         let nodes = problem
             .expand(node)
             .into_iter()
-            .map(|e| (&e).into())
+            .map(|e| (e).into())
             .filter(|n| !visited.contains(n))
             .filter(|n| !frontier.contains(n))
             .collect::<Vec<LightNode>>();

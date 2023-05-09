@@ -102,7 +102,7 @@ impl<'a> Npuzle<'a> {
         })
     }
 
-    fn oper(&self, node: &NpNode, pos: usize, n_pos: usize) -> NpNode {
+    fn oper(&mut self, node: &NpNode, pos: usize, n_pos: usize) -> &NpNode {
         let heuristic = self.heuristic;
         let new_node: NpNode;
         let mut n_state = node.state.clone();
@@ -120,9 +120,9 @@ impl<'a> Npuzle<'a> {
                 heuristic(&n_state),
                 Some(node),
             );
-            self.state_set.push(n_state);
+            self.state_set.push(new_node);
         }
-        new_node
+        &new_node
     }
 }
 
@@ -152,8 +152,8 @@ impl<'a> Problem<'a> for Npuzle<'a> {
         self.state_set.get(id).unwrap()
     }
 
-    fn expand(&mut self, node: &Self::Node) -> Vec<Self::Node> {
-        let mut res: Vec<NpNode> = Vec::new();
+    fn expand(&mut self, node: &Self::Node) -> Vec<&Self::Node> {
+        let mut res: Vec<&NpNode> = Vec::new();
         let mut n: NpNode;
 
         let node: &Self::Node = self.state_set.get(node.id).unwrap();

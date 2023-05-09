@@ -15,7 +15,7 @@ pub trait Problem<'a> {
     fn solve(&mut self) -> Self::Solution;
     fn get_node(&self, id: usize) -> &Self::Node;
     fn is_goal_node(&self, node: &Self::Node) -> bool;
-    fn expand(&mut self, node: &Self::Node) -> Vec<Self::Node>;
+    fn expand(&mut self, node: &Self::Node) -> Vec<&Self::Node>;
     fn print_node(&self, node: &Self::Node);
 }
 
