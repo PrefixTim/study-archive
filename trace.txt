@@ -1,0 +1,41 @@
+Welcome to 862311452; 8 puzzle solver. Enter your own puzzle
+1, 0, 3, 4, 2, 6, 7, 5, 8
+Enter your choice of algorithm
+    Uniform Cost Search
+    A* with the Misplaced Tile heuristic.
+    A* with the Euclidean distance heuristic.
+3
+3
+
+Expanding state:
+The best state to expand with g(n) = 0 and h(n) = 6.23606797749979 is...
+1 0 3 
+4 2 6 
+7 5 8 
+Expanding this node
+
+The best state to expand with g(n) = 1 and h(n) = 5.47213595499958 is...
+1 2 3 
+4 0 6 
+7 5 8 
+Expanding this node
+
+The best state to expand with g(n) = 2 and h(n) = 5.06449510224598 is...
+1 2 3 
+4 5 6 
+7 0 8 
+Expanding this node
+
+The best state to expand with g(n) = 3 and h(n) = 3 is...
+1 2 3 
+4 5 6 
+7 8 0 
+Expanding this node
+
+Goal!!!
+To solve this problem the search algorithm expanded a total of 4 nodes.
+The maximum number of nodes in the queue at any one time:  6.
+The depth of the goal node was 3.
+1 0 3     1 2 3     1 2 3     1 2 3     
+4 2 6     4 0 6     4 5 6     4 5 6     
+7 5 8  => 7 5 8  => 7 0 8  => 7 8 0  => 

@@ -11,8 +11,6 @@ pub fn graph_search<'a>(problem: &mut impl Problem<'a>) -> Result<(SolutionStats
     frontier.push((&problem.get_node(0).clone()).into());
 
     println!("Expanding state:");
-    // p.print_node(frontier.);
-    //         println!();
 
     let mut expanded = 0;
     let mut max_queue = 0;

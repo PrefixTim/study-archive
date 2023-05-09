@@ -60,7 +60,7 @@ impl<'a> Node<'a> for NpNode {
             for j in 0..n {
                 print!("{} ", self.state[i * n + j]);
             }
-            println!("");
+            print!("\n");
         }
     }
 
@@ -217,12 +217,12 @@ impl<'a> Problem<'a> for Npuzle {
     }
 
     fn print_expand(&self, node: &Self::Node) {
-        println!(
-            "The best state to expand with g(n) = {} and h(n) = {} is...",
+        print!(
+            "The best state to expand with g(n) = {} and h(n) = {} is...\n",
             node.depth, node.heuristic
         );
         node.print();
-        println!("Expanding this node\n");
+        print!("Expanding this node\n\n");
     }
 }
 
