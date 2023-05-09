@@ -1,32 +1,14 @@
-mod problems;
-
-use problems::npuzle::{
-    euclidean_distance_heuristic, misplaced_tile_heuristic, zero_heuristic, NpState, Npuzle,
+use prj1::problems::{
+    npuzle::{euclidean_distance_heuristic, misplaced_tile_heuristic, zero_heuristic, NpState},
+    problem_trait::{PrintTrace, Solution},
 };
 use std::io::{self};
 
-use crate::problems::problem_trait::{PrintTrace, Problem, Solution};
-
-//1, 2, 3, 4, 8, 0, 7, 6, 5
-//1, 0, 3, 4, 2, 6, 7, 5, 8
-//1, 0, 3, 4, 2, 6, 7, 5, 8
-//1, 2, 3, 4, 5, 6, 7, 8, 0
-//1, 2, 0, 4, 5, 6, 7, 8, 6
-//8, 7, 1, 6, 0, 2, 5, 4, 3
-//1, 2, 3, 4, 5, 6, 7, 0, 8
-//0, 1, 2, 4, 5, 3, 7, 8, 6
-//1, 2, 3, 4, 5, 6, 8, 7, 0
-
-// To solve this problem the search algorithm expanded a total of 87048 nodes.
-// The maximum number of nodes in the queue at any one time:  25040.
-// The depth of the goal node was 22.
 fn main() {
     println!("Welcome to 862311452; 8 puzzle solver. Enter your own puzzle");
     let (init_s, heuristic) = get_input();
 
-    let mut search = Npuzle::new(init_s, heuristic).unwrap();
-
-    if let Ok(sol) = search.solve() {
+    if let Ok(sol) = prj1::npuzzle_searh(init_s, heuristic) {
         sol.get_stats().print_stats();
         sol.get_trace().print_trace();
     } else {

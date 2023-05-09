@@ -92,30 +92,36 @@ pub struct Npuzle {
     n: usize,
     state_set: Vec<NpNode>,
     heuristic: fn(&NpState) -> f64,
+    print: bool,
+    existance_set: HashSet<usize>
 }
 
 impl Npuzle {
-    pub fn new(init_state: NpState, heuristic: fn(&NpState) -> f64) -> Result<Self, ()> {
+    pub fn new(init_state: NpState, heuristic: fn(&NpState) -> f64, print: bool) -> Result<Self, ()> {
         let n = (init_state.len() as f64).sqrt().floor() as usize;
         let nn = n * n;
         if nn != init_state.len() {
             return Err(());
         }
 
-        let init_heuristic = heuristic(&init_state);
-        let init_node = NpNode::new(0, init_state, 0, init_heuristic, None);
-
+        
         let mut tmp: NpState = (1..(nn as i64)).into_iter().collect();
         tmp.push(0);
         let goal_heuristic = heuristic(&tmp);
         let goal_node = NpNode::new(1, tmp, 0, goal_heuristic, None);
+        
+        let init_heuristic = heuristic(&init_state);
+        let init_node = NpNode::new(if goal_node.state == init_state {1} else {0}, init_state, 0, init_heuristic, None);
 
         Ok(Self {
             n: n,
             state_set: Vec::from([init_node, goal_node]),
             heuristic: heuristic,
+            print: print,
+            existance_set: HashSet::new()
         })
     }
+
 
     fn oper(&mut self, node: &NpNode, pos: usize, n_pos: usize) -> Option<usize> {
         let heuristic = self.heuristic;
@@ -152,7 +158,7 @@ impl<'a> Problem<'a> for Npuzle {
     type Solution = NpSolution;
 
     fn solve(&mut self) -> Result<Self::Solution, ()> {
-        let res = graph_search(self)?;
+        let res = graph_search(self, self.print)?;
 
         let mut trace = vec![self.get_node(res.1.get_id()).clone()];
         let mut nd = self.get_node(res.1.get_id());
@@ -217,6 +223,7 @@ impl<'a> Problem<'a> for Npuzle {
     }
 
     fn print_expand(&self, node: &Self::Node) {
+        if !self.print {return;}
         print!(
             "The best state to expand with g(n) = {} and h(n) = {} is...\n",
             node.depth, node.heuristic
@@ -269,4 +276,92 @@ pub fn euclidean_distance_heuristic(state: &NpState) -> f64 {
             (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) as f64).sqrt()
         })
         .sum()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn get_init_states() -> Vec<(Vec<i64>, String)> {
+        vec![
+            (vec![1, 2, 3, 4, 8, 0, 7, 6, 5], "Ex 1".to_owned()),
+            (vec![1, 0, 3, 4, 2, 6, 7, 5, 8], "Ex 2".to_owned()),
+            (vec![1, 2, 3, 4, 5, 6, 7, 8, 0], "Trival".to_owned()),
+            (vec![1, 2, 0, 4, 5, 3, 7, 8, 6], "Easy".to_owned()),
+            (vec![8, 7, 1, 6, 0, 2, 5, 4, 3], "Oh Boy".to_owned()),
+            (vec![1, 2, 3, 4, 5, 6, 7, 0, 8], "Very Easy".to_owned()),
+            (vec![0, 1, 2, 4, 5, 3, 7, 8, 6], "Doable".to_owned()),
+            (vec![0, 2, 8, 5, 6, 4, 3, 1, 7], "My test 1".to_owned()),
+            (vec![6, 0, 4, 2, 3, 1, 7, 8, 5], "My test 2".to_owned()),
+            (vec![8, 0, 2, 3, 5, 6, 1, 7, 4], "My test 3".to_owned()),
+            (vec![1, 3, 6, 5, 0, 2, 8, 4, 7], "My test 4".to_owned()),
+            (vec![1, 2, 3, 0, 5, 6, 8, 4, 7], "My test 5".to_owned()),
+            // (vec![1, 2, 3, 4, 5, 6, 8, 7, 0], "".to_owned()),
+        ]
+    }
+    #[test]
+    fn general_search() -> Result<(), ()> {
+        get_init_states()
+            .iter()
+            .map(|(state, name)| {
+                (
+                    Npuzle::new(state.clone(), zero_heuristic, false)
+                        .unwrap()
+                        .solve(),
+                    name,
+                )
+            })
+            .for_each(|(res, name)| {
+                assert!(res.is_ok(), "Should be able to Solve {name}" );
+                let stat = res.unwrap().stats;
+                print!(
+                    "{}: {}, {}, {}\n",
+                    name, stat.expanded, stat.max_queue, stat.goal_depth
+                )
+            });
+        Ok(())
+    }
+    #[test]
+    fn astar_misplaced() -> Result<(), ()> {
+        get_init_states()
+            .iter()
+            .map(|(state, name)| {
+                (
+                    Npuzle::new(state.clone(), misplaced_tile_heuristic, false)
+                        .unwrap()
+                        .solve(),
+                    name,
+                )
+            })
+            .for_each(|(res, name)| {
+                assert!(res.is_ok(), "Should be able to Solve {name}" );
+                let stat = res.unwrap().stats;
+                print!(
+                    "{}: {}, {}, {}\n",
+                    name, stat.expanded, stat.max_queue, stat.goal_depth
+                )
+            });
+        Ok(())
+    }
+    #[test]
+    fn astar_euclid() -> Result<(), ()> {
+        get_init_states()
+            .iter()
+            .map(|(state, name)| {
+                (
+                    Npuzle::new(state.clone(), euclidean_distance_heuristic, false)
+                        .unwrap()
+                        .solve(),
+                    name,
+                )
+            })
+            .for_each(|(res, name)| {
+                assert!(res.is_ok(), "Should be able to Solve {name}" );
+                let stat = res.unwrap().stats;
+                print!(
+                    "{}: {}, {}, {}\n",
+                    name, stat.expanded, stat.max_queue, stat.goal_depth
+                )
+            });
+        Ok(())
+    }
 }

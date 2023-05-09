@@ -4,13 +4,13 @@ use super::node_wrap::LightNode;
 use super::problem_trait::{Problem, SolutionStats};
 use std::collections::BinaryHeap;
 
-pub fn graph_search<'a>(problem: &mut impl Problem<'a>) -> Result<(SolutionStats, LightNode), ()> {
+pub fn graph_search<'a>(problem: &mut impl Problem<'a>, print: bool) -> Result<(SolutionStats, LightNode), ()> {
     let mut frontier: BinaryHeap<LightNode> = BinaryHeap::new();
-    let mut visited: Vec<LightNode> = Vec::new();
+    let mut visited: Vec<usize> = Vec::new();
 
     frontier.push((&problem.get_node(0).clone()).into());
 
-    println!("Expanding state:");
+    if print {println!("Expanding state:");}
 
     let mut expanded = 0;
     let mut max_queue = 0;
@@ -47,24 +47,20 @@ pub fn graph_search<'a>(problem: &mut impl Problem<'a>) -> Result<(SolutionStats
         problem.print_expand(&node);
 
         if problem.is_goal_node(&node) {
-            if let Some(goal) = &best_goal {
-                if goal.get_cost() > node.get_cost() {
-                    best_goal = Some(node);
-                }
-            } else {
-                best_goal = Some(node);
-            }
-            continue;
+            if print {println!("Goal!!!");};
+            return Ok((
+                SolutionStats::new(expanded, max_queue, node.get_depth()),
+                (&node).into(),
+            ));
         }
-
         problem
             .expand(&node)
             .into_iter()
             .map(|n| n.into())
-            .filter(|n| !visited.contains(n))
+            .filter(|n: &LightNode| visited.binary_search(&n.get_id()).is_err())
             .for_each(|n| {
                 frontier.push(n);
             });
-        visited.push((&node).into());
+        visited.push(node.get_id());
     }
 }
