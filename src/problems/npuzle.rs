@@ -1,5 +1,3 @@
-use std::mem;
-
 use super::{
     graph_algo_trait::graph_search,
     problem_trait::{Node, PrintTrace, Problem, Solution, SolutionStats},
@@ -234,7 +232,11 @@ impl PrintTrace for &Vec<NpNode> {
         for i in 0..n {
             for s in self.iter().rev() {
                 s.print_line(i);
-                if i!=n-1 {print!("    ")} else {print!(" => ")}
+                if i != n - 1 {
+                    print!("    ")
+                } else {
+                    print!(" => ")
+                }
             }
             println!();
         }
