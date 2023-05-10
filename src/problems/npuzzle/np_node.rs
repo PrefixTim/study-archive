@@ -1,5 +1,5 @@
 use std::{
-    cmp::{Ordering, Reverse},
+    cmp::{Ordering},
     hash::Hash,
 };
 
@@ -8,7 +8,7 @@ use crate::problems::problem_trait::{Node, PrintTrace};
 pub type NpState = Vec<i64>;
 #[derive(Clone)]
 pub struct NpNode {
-    round_cost: i64,
+    // round_cost: i64,
     state: NpState,
     depth: i64,
     heuristic: f64,
@@ -17,12 +17,12 @@ pub struct NpNode {
 
 impl NpNode {
     pub fn new(heuristic: f64, state: NpState, depth: i64, parent_state: Option<NpState>) -> Self {
-        let round_cost = depth * 1000 + (heuristic * 1000.) as i64;
+        // let round_cost = depth * 1000 + (heuristic * 1000.) as i64;
         Self {
             state,
             depth,
             heuristic,
-            round_cost,
+            // round_cost,
             parent_state,
         }
     }
@@ -39,17 +39,6 @@ impl Ord for NpNode {
         } else {
             Ordering::Less
         }
-
-        // let ord = Reverse(self.depth).cmp(&Reverse(other.depth));
-        // if ord == Ordering::Equal {
-        //     if self.heuristic < other.heuristic {
-        //         Ordering::Greater
-        //     } else {
-        //         Ordering::Less
-        //     }
-        // } else {
-        //     ord
-        // }
     }
 }
 
@@ -122,7 +111,7 @@ impl Hash for NpNode {
 impl From<NpState> for NpNode {
     fn from(value: NpState) -> Self {
         NpNode {
-            round_cost: 0,
+            // round_cost: 0,
             state: value,
             depth: 0,
             heuristic: 0.,
@@ -148,11 +137,11 @@ impl<'a> PrintTrace for &Vec<NpNode> {
     }
 }
 
-pub fn zero_heuristic(_state: &NpState, n: usize) -> f64 {
+pub fn zero_heuristic(_state: &NpState, _n: usize) -> f64 {
     0f64
 }
 
-pub fn misplaced_tile_heuristic(state: &NpState, n: usize) -> f64 {
+pub fn misplaced_tile_heuristic(state: &NpState, _n: usize) -> f64 {
     state
         .iter()
         .enumerate()
