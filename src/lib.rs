@@ -10,7 +10,7 @@ pub mod problems;
 
 pub fn npuzzle_searh(
     init_s: Vec<i64>,
-    heuristic: fn(&NpState) -> f64,
+    heuristic: fn(&NpState, usize) -> f64,
 ) -> Result<Solution<NpNode>, ()> {
     let puzzle = Npuzle::new(init_s, heuristic, true).unwrap();
     puzzle.solve()

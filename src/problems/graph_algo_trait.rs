@@ -1,13 +1,12 @@
-use std::collections::VecDeque;
-
 use super::problem_trait::{Node, Problem, Solution, SolutionStats};
+use std::collections::{HashSet, VecDeque};
 
 pub fn graph_search<P>(problem: &P, print: bool) -> Result<Solution<<P as Problem>::Node>, ()>
 where
     P: Problem,
 {
     let mut frontier: VecDeque<<P as Problem>::Node> = VecDeque::new();
-    let mut visited: Vec<<P as Problem>::Node> = Vec::new();
+    let mut visited: HashSet<<P as Problem>::Node> = HashSet::new();
 
     frontier.push_back(problem.get_init_node());
 
@@ -37,11 +36,9 @@ where
             };
             let depth = node.get_depth();
             let mut trace = vec![node.clone()];
-            while  trace.last().unwrap().get_pos() != 0{
-                let parent = visited.get(trace.last().unwrap().get_pos()).unwrap().clone();
-                trace.push(parent);
+            while let Some(parent) = trace.last().unwrap().get_parent_state() {
+                trace.push(visited.get(&parent.into()).unwrap().clone());
             }
-            trace.push(problem.get_init_node());
             return Ok(Solution {
                 trace,
                 stats: SolutionStats::new(expanded, max_queue, depth),
@@ -51,14 +48,13 @@ where
         problem
             .expand(&node)
             .into_iter()
-            .filter(|n| visited.binary_search(n).is_err())
-            .for_each(|mut n| {
-                n.set_pos(visited.len());
+            .filter(|n| !visited.contains(n))
+            .for_each(|n| {
                 let res = frontier.binary_search(&n);
-                if let Err(pos) = res{
+                if let Err(pos) = res {
                     frontier.insert(pos, n);
                 }
             });
-        visited.push(node);
+        visited.insert(node);
     }
 }

@@ -8,22 +8,22 @@ use crate::problems::problem_trait::{Node, PrintTrace};
 pub type NpState = Vec<i64>;
 #[derive(Clone)]
 pub struct NpNode {
+    round_cost: i64,
     state: NpState,
     depth: i64,
     heuristic: f64,
-    round_cost: i64,
-    pos: usize
+    parent_state: Option<NpState>,
 }
 
 impl NpNode {
-    pub fn new(heuristic: f64, state: NpState, depth: i64) -> Self {
+    pub fn new(heuristic: f64, state: NpState, depth: i64, parent_state: Option<NpState>) -> Self {
         let round_cost = depth * 1000 + (heuristic * 1000.) as i64;
         Self {
             state,
             depth,
             heuristic,
             round_cost,
-            pos: 0
+            parent_state,
         }
     }
 
@@ -34,7 +34,22 @@ impl NpNode {
 
 impl Ord for NpNode {
     fn cmp(&self, other: &Self) -> Ordering {
-        Reverse(self.round_cost).cmp(&Reverse(other.round_cost))
+        if self.depth as f64 + self.heuristic < other.depth as f64 + other.heuristic {
+            Ordering::Greater
+        } else {
+            Ordering::Less
+        }
+
+        // let ord = Reverse(self.depth).cmp(&Reverse(other.depth));
+        // if ord == Ordering::Equal {
+        //     if self.heuristic < other.heuristic {
+        //         Ordering::Greater
+        //     } else {
+        //         Ordering::Less
+        //     }
+        // } else {
+        //     ord
+        // }
     }
 }
 
@@ -93,18 +108,26 @@ impl Node for NpNode {
         print!("Expanding this node\n\n");
     }
 
-    fn get_pos(&self) -> usize {
-        self.pos
-    }
-
-    fn set_pos(&mut self, pos: usize) {
-        self.pos = pos;
+    fn get_parent_state(&self) -> Option<Self::State> {
+        self.parent_state.clone()
     }
 }
 
 impl Hash for NpNode {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.state.hash(state);
+    }
+}
+
+impl From<NpState> for NpNode {
+    fn from(value: NpState) -> Self {
+        NpNode {
+            round_cost: 0,
+            state: value,
+            depth: 0,
+            heuristic: 0.,
+            parent_state: None,
+        }
     }
 }
 
@@ -125,12 +148,11 @@ impl<'a> PrintTrace for &Vec<NpNode> {
     }
 }
 
-
-pub fn zero_heuristic(_state: &NpState) -> f64 {
+pub fn zero_heuristic(_state: &NpState, n: usize) -> f64 {
     0f64
 }
 
-pub fn misplaced_tile_heuristic(state: &NpState) -> f64 {
+pub fn misplaced_tile_heuristic(state: &NpState, n: usize) -> f64 {
     state
         .iter()
         .enumerate()
@@ -138,18 +160,22 @@ pub fn misplaced_tile_heuristic(state: &NpState) -> f64 {
         .count() as f64
 }
 
-pub fn euclidean_distance_heuristic(state: &NpState) -> f64 {
-    let n: i64 = (state.len() as f64).sqrt() as i64;
+pub fn euclidean_distance_heuristic(state: &NpState, n: usize) -> f64 {
+    let n = n as i64;
     state
         .iter()
         .enumerate()
         .map(|(i, &e)| {
-            let (x1, y1, x2, y2);
-            x1 = e % n;
-            y1 = e / n;
-            x2 = (i + 1) as i64 % n;
-            y2 = (i + 1) as i64 / n;
-            (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) as f64).sqrt()
+            if e != 0 {
+                let (x1, y1, x2, y2);
+                x1 = e % n;
+                y1 = e / n;
+                x2 = (i + 1) as i64 % n;
+                y2 = (i + 1) as i64 / n;
+                (((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) as f64).sqrt()
+            } else {
+                0.
+            }
         })
         .sum()
 }

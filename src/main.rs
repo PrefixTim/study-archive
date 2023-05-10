@@ -14,7 +14,7 @@ fn main() {
     }
 }
 
-fn get_input() -> (NpState, fn(&NpState) -> f64) {
+fn get_input() -> (NpState, fn(&NpState, usize) -> f64) {
     let mut buffer = String::new();
 
     io::stdin().read_line(&mut buffer).unwrap();

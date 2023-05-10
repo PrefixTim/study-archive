@@ -1,19 +1,18 @@
-pub trait Node: Clone + Ord {
-    type State;
+use std::hash::Hash;
+
+pub trait Node: Clone + Ord + Hash + From<Self::State>{
+    type State: Hash;
     fn get_state(&self) -> &Self::State;
     fn get_cost(&self) -> f64;
     fn get_depth(&self) -> i64;
-    fn get_pos(&self) -> usize;
-
-    fn set_pos(&mut self, pos: usize);
-
+    fn get_parent_state(&self) -> Option<Self::State>;
     fn print(&self);
     fn print_line(&self, i: usize);
     fn print_expand(&self);
 }
 pub trait Problem {
-    type State;
-    type Node: Node< State = Self::State>;
+    type State: Hash;
+    type Node: Node<State = Self::State>;
     fn solve(&self) -> Result<Solution<Self::Node>, ()>;
     fn expand(&self, node: &Self::Node) -> Vec<Self::Node>;
     fn is_goal_node(&self, node: &Self::Node) -> bool;

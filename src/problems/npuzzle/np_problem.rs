@@ -7,7 +7,7 @@ use super::np_node::{NpNode, NpState};
 
 pub struct Npuzle {
     n: usize,
-    heuristic: fn(&NpState) -> f64,
+    heuristic: fn(&NpState, usize) -> f64,
     init_node: NpNode,
     goal_node: NpNode,
     print: bool,
@@ -16,7 +16,7 @@ pub struct Npuzle {
 impl Npuzle {
     pub fn new(
         init_state: NpState,
-        heuristic: fn(&NpState) -> f64,
+        heuristic: fn(&NpState, usize) -> f64,
         print: bool,
     ) -> Result<Self, ()> {
         let n = (init_state.len() as f64).sqrt().floor() as usize;
@@ -28,8 +28,8 @@ impl Npuzle {
         let mut goal_state: NpState = (1..(nn as i64)).into_iter().collect();
         goal_state.push(0);
 
-        let goal_node = NpNode::new(heuristic(&goal_state), goal_state, 0);
-        let init_node = NpNode::new(heuristic(&init_state), init_state, 0);
+        let goal_node = NpNode::new(heuristic(&goal_state, n), goal_state, 0, None);
+        let init_node = NpNode::new(heuristic(&init_state, n), init_state, 0, None);
 
         Ok(Self {
             n,
@@ -44,7 +44,7 @@ impl Npuzle {
         let heuristic = self.heuristic;
         let mut n_state = node.get_state().clone();
         n_state.swap(pos, n_pos);
-        NpNode::new(heuristic(&n_state), n_state, node.get_depth() + 1)
+        NpNode::new(heuristic(&n_state, self.n), n_state, node.get_depth() + 1, Some(node.get_state().clone()))
     }
 }
 
