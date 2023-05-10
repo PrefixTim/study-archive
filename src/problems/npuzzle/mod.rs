@@ -24,7 +24,6 @@ mod tests {
             (vec![8, 7, 1, 6, 0, 2, 5, 4, 3], "Oh Boy".to_owned()),
             (vec![8, 0, 2, 3, 5, 6, 1, 7, 4], "My test 23".to_owned()),
             (vec![0, 2, 8, 5, 6, 4, 3, 1, 7], "My test 26".to_owned()),
-            // (vec![1, 2, 3, 4, 5, 6, 8, 7, 0], "".to_owned()),
         ]
     }
     #[test]
@@ -92,5 +91,22 @@ mod tests {
                 )
             });
         Ok(())
+    }
+
+    #[test]
+    fn faied_search() {
+        let impos = vec![1, 2, 3, 4, 5, 6, 8, 7, 0];
+        let res = Npuzle::new(impos.clone(), zero_heuristic, false)
+            .unwrap()
+            .solve();
+        assert!(res.is_err(), "Should be imposible to Solve");
+        let res = Npuzle::new(impos.clone(), misplaced_tile_heuristic, false)
+            .unwrap()
+            .solve();
+        assert!(res.is_err(), "Should be imposible to Solve");
+        let res = Npuzle::new(impos.clone(), euclidean_distance_heuristic, false)
+            .unwrap()
+            .solve();
+        assert!(res.is_err(), "Should be imposible to Solve");
     }
 }
