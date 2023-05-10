@@ -8,25 +8,25 @@ Enter your choice of algorithm
 3
 
 Expanding state:
-The best state to expand with g(n) = 0 and h(n) = 6.23606797749979 is...
+The best state to expand with g(n) = 0 and h(n) = 4.23606797749979 is...
 1 0 3 
 4 2 6 
 7 5 8 
 Expanding this node
 
-The best state to expand with g(n) = 1 and h(n) = 5.47213595499958 is...
+The best state to expand with g(n) = 1 and h(n) = 3.23606797749979 is...
 1 2 3 
 4 0 6 
 7 5 8 
 Expanding this node
 
-The best state to expand with g(n) = 2 and h(n) = 5.06449510224598 is...
+The best state to expand with g(n) = 2 and h(n) = 2.23606797749979 is...
 1 2 3 
 4 5 6 
 7 0 8 
 Expanding this node
 
-The best state to expand with g(n) = 3 and h(n) = 3 is...
+The best state to expand with g(n) = 3 and h(n) = 0 is...
 1 2 3 
 4 5 6 
 7 8 0 
