@@ -12,18 +12,18 @@ mod tests {
 
     fn get_init_states() -> Vec<(Vec<i64>, String)> {
         vec![
-            (vec![1, 2, 3, 4, 8, 0, 7, 6, 5], "Ex 1".to_owned()),
-            (vec![1, 0, 3, 4, 2, 6, 7, 5, 8], "Ex 2".to_owned()),
             (vec![1, 2, 3, 4, 5, 6, 7, 8, 0], "Trival".to_owned()),
-            (vec![1, 2, 0, 4, 5, 3, 7, 8, 6], "Easy".to_owned()),
-            (vec![8, 7, 1, 6, 0, 2, 5, 4, 3], "Oh Boy".to_owned()),
             (vec![1, 2, 3, 4, 5, 6, 7, 0, 8], "Very Easy".to_owned()),
+            (vec![1, 2, 0, 4, 5, 3, 7, 8, 6], "Easy".to_owned()),
+            (vec![1, 0, 3, 4, 2, 6, 7, 5, 8], "Ex 2".to_owned()),
             (vec![0, 1, 2, 4, 5, 3, 7, 8, 6], "Doable".to_owned()),
-            (vec![0, 2, 8, 5, 6, 4, 3, 1, 7], "My test 1".to_owned()),
-            (vec![6, 0, 4, 2, 3, 1, 7, 8, 5], "My test 2".to_owned()),
-            (vec![8, 0, 2, 3, 5, 6, 1, 7, 4], "My test 3".to_owned()),
-            (vec![1, 3, 6, 5, 0, 2, 8, 4, 7], "My test 4".to_owned()),
-            (vec![1, 2, 3, 0, 5, 6, 8, 4, 7], "My test 5".to_owned()),
+            (vec![1, 2, 3, 4, 8, 0, 7, 6, 5], "Ex 1".to_owned()),
+            (vec![1, 2, 3, 0, 5, 6, 8, 4, 7], "My test 11".to_owned()),
+            (vec![1, 3, 6, 5, 0, 2, 8, 4, 7], "My test 16".to_owned()),
+            (vec![6, 0, 4, 2, 3, 1, 7, 8, 5], "My test 21".to_owned()),
+            (vec![8, 7, 1, 6, 0, 2, 5, 4, 3], "Oh Boy".to_owned()),
+            (vec![8, 0, 2, 3, 5, 6, 1, 7, 4], "My test 23".to_owned()),
+            (vec![0, 2, 8, 5, 6, 4, 3, 1, 7], "My test 26".to_owned()),
             // (vec![1, 2, 3, 4, 5, 6, 8, 7, 0], "".to_owned()),
         ]
     }
