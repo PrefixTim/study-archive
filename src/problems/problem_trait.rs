@@ -1,33 +1,33 @@
-pub trait Node<'a>: Clone {
+pub trait Node: Clone + Ord {
     type State;
     fn get_state(&self) -> &Self::State;
-    fn get_id(&self) -> usize;
     fn get_cost(&self) -> f64;
     fn get_depth(&self) -> i64;
-    fn partial_clone(&self) -> Self;
+    fn get_pos(&self) -> usize;
+
+    fn set_pos(&mut self, pos: usize);
+
     fn print(&self);
     fn print_line(&self, i: usize);
-
+    fn print_expand(&self);
 }
-pub trait Problem<'a> {
+pub trait Problem {
     type State;
-    type Node: Node<'a, State = Self::State>;
-    type Solution: Solution<Node = Self::Node>;
-
-    fn solve(&mut self) -> Result<Self::Solution, ()>;
-    fn get_node(&self, id: usize) -> &Self::Node;
-    fn get_node_parent(&self, node: &Self::Node) -> Option<& Self::Node>;
+    type Node: Node< State = Self::State>;
+    fn solve(&self) -> Result<Solution<Self::Node>, ()>;
+    fn expand(&self, node: &Self::Node) -> Vec<Self::Node>;
     fn is_goal_node(&self, node: &Self::Node) -> bool;
-    fn expand(&mut self, node: &Self::Node) -> Vec<&Self::Node>;
-
-    fn print_expand(&self, node: &Self::Node);
+    fn get_init_node(&self) -> Self::Node;
 }
 
-pub trait Solution {
-    type Node;
-    fn get_trace(&self) -> &Vec<Self::Node>;
-    fn get_stats(&self) -> &SolutionStats;
+pub struct Solution<N>
+where
+    N: Node,
+{
+    pub trace: Vec<N>,
+    pub stats: SolutionStats,
 }
+
 #[derive(Debug)]
 pub struct SolutionStats {
     pub expanded: i64,
@@ -56,7 +56,6 @@ impl SolutionStats {
         println!("The depth of the goal node was {}.", self.goal_depth);
     }
 }
-
 
 pub trait PrintTrace {
     fn print_trace(&self);

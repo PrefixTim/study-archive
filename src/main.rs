@@ -1,16 +1,14 @@
-use prj1::problems::{
-    npuzle::{euclidean_distance_heuristic, misplaced_tile_heuristic, zero_heuristic, NpState},
-    problem_trait::{PrintTrace, Solution},
-};
 use std::io::{self};
+
+use prj1::problems::{problem_trait::PrintTrace, npuzzle::np_node::{zero_heuristic, misplaced_tile_heuristic, euclidean_distance_heuristic, NpState}};
 
 fn main() {
     println!("Welcome to 862311452; 8 puzzle solver. Enter your own puzzle");
     let (init_s, heuristic) = get_input();
 
     if let Ok(sol) = prj1::npuzzle_searh(init_s, heuristic) {
-        sol.get_stats().print_stats();
-        sol.get_trace().print_trace();
+        sol.stats.print_stats();
+        (&sol.trace).print_trace();
     } else {
         println!("Failed to reach a goal state");
     }
