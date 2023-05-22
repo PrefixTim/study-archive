@@ -1,0 +1,37 @@
+Welcome to Timofey Malko(862311452) Feature Selection Algorithm.
+Please enter total number of features:
+4
+Type the number of the algorithm you want to run.
+
+        Forward Selection
+        Backward Elimination
+        Bertie’s Special Algorithm.
+1
+Using no features and “random” evaluation, I get an accuracy of 50%
+
+Beginning search.
+
+Using feature(s) [0] accuracy is 35.16913212999334%
+Using feature(s) [1] accuracy is 77.51550416529082%
+Using feature(s) [2] accuracy is 86.91929234329787%
+Using feature(s) [3] accuracy is 17.51054522269151%
+
+Feature set [2] was best, accuracy is 86.91929234329787%
+
+Using feature(s) [0, 2] accuracy is 20.89573160468603%
+Using feature(s) [1, 2] accuracy is 3.7914734887478985%
+Using feature(s) [2, 3] accuracy is 92.0688190069507%
+
+Feature set [2, 3] was best, accuracy is 92.0688190069507%
+
+Using feature(s) [0, 2, 3] accuracy is 61.615038838956096%
+Using feature(s) [1, 2, 3] accuracy is 35.43324907614917%
+
+(Warning, Accuracy has decreased!)%
+
+Using feature(s) [0, 1, 2, 3] accuracy is 91.87727067809519%
+
+(Warning, Accuracy has decreased!)%
+
+
+Finished search!! The best feature subset is  [2, 3], which has an accuracy of 92.0688190069507%
