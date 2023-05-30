@@ -1,11 +1,12 @@
 use super::instance::{InstanceArena, InstanceId, Label};
 use super::feature::FeatureSet;
 
-pub trait Classifier {
+pub trait Classifier: Clone {
     fn test(&self, instid: InstanceId, fset: &FeatureSet) -> Label;
     fn train(&mut self, train_data: Vec<usize>);
 }
 
+#[derive(Clone)]
 struct NNClassifier<'a> {
     data: &'a InstanceArena,
     train_data: Vec<usize>,

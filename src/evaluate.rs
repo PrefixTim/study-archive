@@ -1,22 +1,27 @@
-use super::{classifier::Classifier, instance::InstanceArena, feature::FeatureSet};
+use super::{classifier::Classifier, feature::FeatureSet, instance::InstanceArena};
 
 pub struct Evaluator {}
 impl Evaluator {
-    pub fn eval_node(&self, fset: &FeatureSet, classifier: &impl Classifier, data: &InstanceArena) -> f64 {
-        let mut classifier = classifier.clone();
+    pub fn eval_node(
+        &self,
+        fset: &FeatureSet,
+        classifier: &impl Classifier,
+        data: &InstanceArena,
+    ) -> f64 {
+        let mut classifier = (*classifier).clone();
         if fset.is_empty() {
             50.
         } else {
             let ids: Vec<usize> = (0..data.len()).collect();
-            ids.iter().filter(
-                |&&i| 
-                {
+            ids.iter()
+                .filter(|i| {
                     let mut train_data = ids.clone();
-                    train_data.remove(i);
+                    train_data.remove(**i);
                     classifier.train(train_data);
-                    classifier.test(i, fset) == data[i].label
-                }
-            ).count() as f64 / (data.len() as f64)
+                    classifier.test(**i, fset) == data[**i].label
+                })
+                .count() as f64
+                / (data.len() as f64)
         }
     }
 
