@@ -1,5 +1,5 @@
-use super::instance::{InstanceArena, InstanceId, Label};
 use super::feature::FeatureSet;
+use super::instance::{InstanceArena, InstanceId, Label};
 
 pub trait Classifier: Clone {
     fn test(&self, instid: InstanceId, fset: &FeatureSet) -> Label;
@@ -7,7 +7,7 @@ pub trait Classifier: Clone {
 }
 
 #[derive(Clone)]
-struct NNClassifier<'a> {
+pub struct NNClassifier<'a> {
     data: &'a InstanceArena,
     train_data: Vec<usize>,
 }
@@ -26,17 +26,22 @@ impl Classifier for NNClassifier<'_> {
             .iter()
             .map(|i| &self.data[*i])
             .map(|d| {
-                fset.get_features()
-                    .iter()
-                    .map(|&i| {
-                        let tmp = other.features[i] - d.features[i];
-                        tmp * tmp
-                    })
-                    .sum::<f64>()
-                    .sqrt()
+                let tmp = fset.get_features();
+                (
+                    tmp
+                        .iter()
+                        .map(|&i| {
+                            let tmp = other.features[i] - d.features[i];
+                            tmp * tmp
+                        })
+                        .sum::<f64>()
+                        .sqrt(),
+                    d.label,
+                )
             })
-            .max_by(f64::total_cmp)
+            .max_by(|a, b| a.0.total_cmp(&b.0))
             .unwrap_or_default()
+            .1
     }
 
     fn train(&mut self, train_data: Vec<usize>) {

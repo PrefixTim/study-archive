@@ -10,7 +10,7 @@ impl Evaluator {
     ) -> f64 {
         let mut classifier = (*classifier).clone();
         if fset.is_empty() {
-            50.
+            0.
         } else {
             let ids: Vec<usize> = (0..data.len()).collect();
             ids.iter()
@@ -18,7 +18,9 @@ impl Evaluator {
                     let mut train_data = ids.clone();
                     train_data.remove(**i);
                     classifier.train(train_data);
-                    classifier.test(**i, fset) == data[**i].label
+                    let tmp =classifier.test(**i, fset);
+                    let tmp = tmp == data[**i].label;
+                    tmp
                 })
                 .count() as f64
                 / (data.len() as f64)

@@ -1,12 +1,18 @@
-use prj2_lib::{backward_elim, Evaluator, forward_sel};
+use std::{env, fs};
+
+use prj2_lib::{backward_elim, forward_sel, DataInstance, Evaluator, InstanceArena, NNClassifier};
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    // let file_path = &args[1];
+    let file_path = "./small-test-dataset.txt";
     let mut buf = String::new();
 
-    println!("Welcome to Timofey Malko(862311452) Feature Selection Algorithm.\nPlease enter total number of features:");
-
-    std::io::stdin().read_line(&mut buf).unwrap();
-    let size: usize = buf.trim().parse().expect("Invalid input.");
+    println!("Welcome to Timofey Malko(862311452) Feature Selection Algorithm.");
+    // println!("\nPlease enter total number of features:");
+    // std::io::stdin().read_line(&mut buf).unwrap();
+    // let size: usize = buf.trim().parse().expect("Invalid input.");
 
     println!("Type the number of the algorithm you want to run.\n\n\tForward Selection\n\tBackward Elimination\n\tBertie’s Special Algorithm.");
     buf.clear();
@@ -20,6 +26,28 @@ fn main() {
         }
     };
 
+    let data = read_file(file_path);
     let eval = Evaluator {};
-    func(eval, size);
+    let classifier = NNClassifier::new(&data);
+    func(eval, &classifier, &data);
+}
+
+fn read_file(file_path: &str) -> InstanceArena {
+    let content = fs::read_to_string(file_path).expect("Should have been able to read the file");
+    content
+        .lines()
+        .map(|l| {
+            let mut splt: Vec<f64> = l
+                .trim()
+                .split_whitespace()
+                .map(|n| n.parse::<f64>().expect("file parse faile"))
+                .collect();
+            let label = splt[0];
+            splt.remove(0);
+            DataInstance {
+                label,
+                features: splt,
+            }
+        })
+        .collect()
 }
