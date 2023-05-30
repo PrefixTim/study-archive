@@ -19,7 +19,7 @@ impl<'a> NNClassifier<'a> {
 }
 
 impl Classifier for NNClassifier<'_> {
-    fn test(&self, instid: InstanceId, fset: FeatureSet) -> Label {
+    fn test(&self, instid: InstanceId, fset: &FeatureSet) -> Label {
         let other = &self.data[instid];
         self.train_data
             .iter()
