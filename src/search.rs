@@ -1,10 +1,9 @@
-use super::feature::FeatureSet;
-use super::evaluate::Evaluator;
+use super::{evaluate::Evaluator, classifier::Classifier, instance::InstanceArena, feature::FeatureSet};
 
-pub fn forward_sel(evalr: Evaluator, n_featurees: usize) -> FeatureSet {
-    let mut unused: FeatureSet = FeatureSet::new_full(n_featurees);
-    let mut max_node = FeatureSet::new_empty(n_featurees);
-    let mut max_eval = evalr.eval_node(&max_node);
+pub fn forward_sel(evalr: Evaluator, classifier: &impl Classifier, data: &InstanceArena) -> FeatureSet {
+    let mut unused: FeatureSet = FeatureSet::new_full(data.len());
+    let mut max_node = FeatureSet::new_empty(data.len());
+    let mut max_eval = evalr.eval_node(&max_node, classifier, data);
     let mut next_node = max_node.clone();
 
     println!(
@@ -19,7 +18,7 @@ pub fn forward_sel(evalr: Evaluator, n_featurees: usize) -> FeatureSet {
             .iter()
             .map(|e| next_node.set_feat_clone(e, true))
             .collect::<Vec<FeatureSet>>();
-        let (i, eval) = evalr.eval_nodes(&nodes);
+        let (i, eval) = evalr.eval_nodes(&nodes, classifier, data);
         unused.set_feat(&feats[i], false);
         next_node.set_feat(&feats[i], true);
         if max_eval < eval {
@@ -43,9 +42,9 @@ pub fn forward_sel(evalr: Evaluator, n_featurees: usize) -> FeatureSet {
     max_node
 }
 
-pub fn backward_elim(evalr: Evaluator, n_featurees: usize) -> FeatureSet {
-    let mut max_node = FeatureSet::new_full(n_featurees);
-    let mut max_eval = evalr.eval_node(&max_node);
+pub fn backward_elim(evalr: Evaluator, classifier: &impl Classifier, data: &InstanceArena) -> FeatureSet {
+    let mut max_node = FeatureSet::new_full(data.len());
+    let mut max_eval = evalr.eval_node(&max_node, classifier, data);
     let mut next_node = max_node.clone();
 
     println!("\nBeginning search.\n");
@@ -66,7 +65,7 @@ pub fn backward_elim(evalr: Evaluator, n_featurees: usize) -> FeatureSet {
             .iter()
             .map(|e| next_node.set_feat_clone(e, false))
             .collect::<Vec<FeatureSet>>();
-        let (i, eval) = evalr.eval_nodes(&nodes);
+        let (i, eval) = evalr.eval_nodes(&nodes, classifier, data);
         next_node.set_feat(&feats[i], false);
         if max_eval < eval {
             max_eval = eval;
