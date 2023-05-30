@@ -1,4 +1,5 @@
-pub type Featuer = usize;
+pub type Featuer = f64;
+pub type FeatuerIndex = usize;
 
 #[derive(Debug, Clone)]
 pub struct FeatureSet {
@@ -21,11 +22,11 @@ impl FeatureSet {
     //     self.feat_state[feat as usize]
     // }
 
-    pub fn set_feat(&mut self, feat: &Featuer, state: bool) {
+    pub fn set_feat(&mut self, feat: &FeatuerIndex, state: bool) {
         self.feat_state[*feat as usize] = state;
     }
 
-    pub fn set_feat_clone(&mut self, feat: &Featuer, state: bool) -> Self {
+    pub fn set_feat_clone(&mut self, feat: &FeatuerIndex, state: bool) -> Self {
         let mut node = self.clone();
 
         node.feat_state[*feat as usize] = state;
@@ -36,7 +37,7 @@ impl FeatureSet {
         !self.feat_state.contains(&true)
     }
 
-    pub fn get_features(&self) -> Vec<Featuer> {
+    pub fn get_features(&self) -> Vec<FeatuerIndex> {
         self.feat_state
             .iter()
             .enumerate()
