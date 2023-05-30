@@ -50,32 +50,22 @@ fn read_file(file_path: &str) -> InstanceArena {
             }
         })
         .collect();
-    let size: usize = data[0].features.len();
-    let mut m = vec![0.; size];
-    let mut sig = vec![0.; size];
 
-    data.iter().for_each(|d| {
-        d.features
+    (0..data[0].features.len()).for_each(|i| {
+        let min = data
             .iter()
-            .zip(m.iter_mut())
-            .for_each(|(f, m)| *m += f)
+            .min_by(|a, b| a.features[i].total_cmp(&b.features[i]))
+            .unwrap()
+            .features[i];
+        let max = data
+            .iter()
+            .max_by(|a, b| a.features[i].total_cmp(&b.features[i]))
+            .unwrap()
+            .features[i];
+        let m = max - min;
+        data.iter_mut()
+            .for_each(|e| e.features[i] = (e.features[i] - min) / m);
     });
-    m.iter_mut().for_each(|e| *e /= size as f64);
-    data.iter_mut().for_each(|d| {
-        d.features
-            .iter_mut()
-            .zip(m.iter().zip(sig.iter_mut()))
-            .for_each(|(f, (&m, sd))| {
-                *f -= m;
-                *sd += *f * *f
-            })
-    });
-    sig.iter_mut().for_each(|e| *e = (*e / size as f64).sqrt());
-    data.iter_mut().for_each(|d| {
-        d.features
-            .iter_mut()
-            .zip(sig.iter())
-            .for_each(|(f, &sig)| *f /= sig)
-    });
+
     data
 }

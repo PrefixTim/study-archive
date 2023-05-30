@@ -14,16 +14,15 @@ impl Evaluator {
         } else {
             let ids: Vec<usize> = (0..data.len()).collect();
             ids.iter()
-                .filter(|i| {
+                .filter(|&i| {
                     let mut train_data = ids.clone();
-                    train_data.remove(**i);
+                    train_data.remove(*i);
                     classifier.train(train_data);
-                    let tmp =classifier.test(**i, fset);
-                    let tmp = tmp == data[**i].label;
-                    tmp
+                    let tmp = classifier.test(*i, fset);
+                    tmp == data[*i].label
                 })
                 .count() as f64
-                / (data.len() as f64)
+                / (ids.len() as f64)
         }
     }
 
