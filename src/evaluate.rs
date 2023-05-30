@@ -1,24 +1,39 @@
-use super::feature::FeatureSet;
+use super::{classifier::Classifier, instance::InstanceArena, feature::FeatureSet};
 
 pub struct Evaluator {}
 impl Evaluator {
-    pub fn eval_node(&self, node: &FeatureSet) -> f64 {
-        if node.is_empty() {
+    pub fn eval_node(&self, fset: &FeatureSet, classifier: &impl Classifier, data: &InstanceArena) -> f64 {
+        let mut classifier = classifier.clone();
+        if fset.is_empty() {
             50.
         } else {
-            rand::random::<f64>() * 100.
+            let ids: Vec<usize> = (0..data.len()).collect();
+            ids.iter().filter(
+                |&&i| 
+                {
+                    let mut train_data = ids.clone();
+                    train_data.remove(i);
+                    classifier.train(train_data);
+                    classifier.test(i, fset) == data[i].label
+                }
+            ).count() as f64 / (data.len() as f64)
         }
     }
 
-    pub fn eval_nodes<'a>(&'a self, nodes: &'a Vec<FeatureSet>) -> (usize, f64) {
-        nodes
+    pub fn eval_nodes<'a>(
+        &'a self,
+        fsets: &'a Vec<FeatureSet>,
+        classifier: &impl Classifier,
+        data: &InstanceArena,
+    ) -> (usize, f64) {
+        fsets
             .iter()
             .enumerate()
-            .map(|(i, e)| {
-                let eval = self.eval_node(e);
+            .map(|(i, fset)| {
+                let eval = self.eval_node(fset, classifier, data);
                 println!(
                     "Using feature(s) {:?} accuracy is {}%",
-                    e.get_features(),
+                    fset.get_features(),
                     eval
                 );
                 (i, eval)

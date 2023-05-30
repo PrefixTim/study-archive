@@ -2,7 +2,7 @@ use super::instance::{InstanceArena, InstanceId, Label};
 use super::feature::FeatureSet;
 
 pub trait Classifier {
-    fn test(&self, instid: InstanceId, fset: FeatureSet) -> Label;
+    fn test(&self, instid: InstanceId, fset: &FeatureSet) -> Label;
     fn train(&mut self, train_data: Vec<usize>);
 }
 
