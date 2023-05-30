@@ -3,7 +3,7 @@ use std::{env, fs};
 use prj2_lib::{backward_elim, forward_sel, DataInstance, Evaluator, InstanceArena, NNClassifier};
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let _args: Vec<String> = env::args().collect();
 
     // let file_path = &args[1];
     let file_path = "./small-test-dataset.txt";
@@ -34,7 +34,7 @@ fn main() {
 
 fn read_file(file_path: &str) -> InstanceArena {
     let content = fs::read_to_string(file_path).expect("Should have been able to read the file");
-    content
+    let mut data: Vec<DataInstance> = content
         .lines()
         .map(|l| {
             let mut splt: Vec<f64> = l
@@ -49,5 +49,33 @@ fn read_file(file_path: &str) -> InstanceArena {
                 features: splt,
             }
         })
-        .collect()
+        .collect();
+    let size: usize = data[0].features.len();
+    let mut m = vec![0.; size];
+    let mut sig = vec![0.; size];
+
+    data.iter().for_each(|d| {
+        d.features
+            .iter()
+            .zip(m.iter_mut())
+            .for_each(|(f, m)| *m += f)
+    });
+    m.iter_mut().for_each(|e| *e /= size as f64);
+    data.iter_mut().for_each(|d| {
+        d.features
+            .iter_mut()
+            .zip(m.iter().zip(sig.iter_mut()))
+            .for_each(|(f, (&m, sd))| {
+                *f -= m;
+                *sd += *f * *f
+            })
+    });
+    sig.iter_mut().for_each(|e| *e = (*e / size as f64).sqrt());
+    data.iter_mut().for_each(|d| {
+        d.features
+            .iter_mut()
+            .zip(sig.iter())
+            .for_each(|(f, &sig)| *f /= sig)
+    });
+    data
 }
