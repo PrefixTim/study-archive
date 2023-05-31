@@ -3,10 +3,10 @@ use std::{env, fs};
 use prj2_lib::{backward_elim, forward_sel, DataInstance, Evaluator, InstanceArena, NNClassifier};
 
 fn main() {
-    let _args: Vec<String> = env::args().collect();
+    let args: Vec<String> = env::args().collect();
 
-    // let file_path = &args[1];
-    let file_path = "./small-test-dataset.txt";
+    let file_path = &args[1];
+
     let mut buf = String::new();
 
     println!("Welcome to Timofey Malko(862311452) Feature Selection Algorithm.");

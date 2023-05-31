@@ -39,7 +39,7 @@ impl Classifier for NNClassifier<'_> {
                     d.label,
                 )
             })
-            .max_by(|a, b| a.0.total_cmp(&b.0))
+            .min_by(|a, b| a.0.total_cmp(&b.0))
             .unwrap_or_default()
             .1
     }
