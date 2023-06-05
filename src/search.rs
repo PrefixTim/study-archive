@@ -1,8 +1,8 @@
-use super::{evaluate::Evaluator, classifier::Classifier, instance::InstanceArena, feature::FeatureSet};
+use super::{evaluate::Evaluator, classifier::Classifier, instance::InstanceArena, feature::FeatureSet, Arr1f32, Arr2f32};
 
-pub fn forward_sel(evalr: Evaluator, classifier: &impl Classifier, data: &InstanceArena) -> FeatureSet {
-    let mut unused: FeatureSet = FeatureSet::new_full(data[0].features.len());
-    let mut max_node = FeatureSet::new_empty(data[0].features.len());
+pub fn forward_sel(evalr: Evaluator, classifier: &impl Classifier, data: &(Arr1f32, Arr2f32) ) -> FeatureSet {
+    let mut unused: FeatureSet = FeatureSet::new_full(data.1.len());
+    let mut max_node = FeatureSet::new_empty(data.1.len());
     let mut max_eval = evalr.eval_node(&max_node, classifier, data);
     let mut next_node = max_node.clone();
 
@@ -42,8 +42,8 @@ pub fn forward_sel(evalr: Evaluator, classifier: &impl Classifier, data: &Instan
     max_node
 }
 
-pub fn backward_elim(evalr: Evaluator, classifier: &impl Classifier, data: &InstanceArena) -> FeatureSet {
-    let mut max_node = FeatureSet::new_full(data[0].features.len());
+pub fn backward_elim(evalr: Evaluator, classifier: &impl Classifier, data: &(Arr1f32, Arr2f32)) -> FeatureSet {
+    let mut max_node = FeatureSet::new_full(data.1.len());
     let mut max_eval = evalr.eval_node(&max_node, classifier, data);
     let mut next_node = max_node.clone();
 
