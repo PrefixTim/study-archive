@@ -6,6 +6,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     let file_path = &args[1];
+    // let file_path = "./small-test-dataset.txt";
 
     let mut buf = String::new();
 
@@ -14,7 +15,7 @@ fn main() {
     // std::io::stdin().read_line(&mut buf).unwrap();
     // let size: usize = buf.trim().parse().expect("Invalid input.");
 
-    println!("Type the number of the algorithm you want to run.\n\n\tForward Selection\n\tBackward Elimination\n\tBertie’s Special Algorithm.");
+    println!("Type the number of the algorithm you want to run.\n\n\tForward Selection\n\tBackward Elimination.");
     buf.clear();
     std::io::stdin().read_line(&mut buf).unwrap();
     let func = match buf.trim() {

@@ -22,7 +22,7 @@ impl Evaluator {
                     tmp == data[*i].label
                 })
                 .count() as f64
-                / (ids.len() as f64)
+                / (ids.len() as f64) * 100f64
         }
     }
 
