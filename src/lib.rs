@@ -1,14 +1,11 @@
-mod evaluate;
-mod search;
 mod classifier;
+mod evaluate;
+mod feature;
+mod instance;
+mod search;
 
-use ndarray::{ArrayBase, OwnedRepr, Dim};
-
+pub use classifier::{Classifier, KNNClassifier, NNClassifier};
+pub use evaluate::{Evaluator, LooEvaluator};
+pub use feature::FeatureSet;
+pub use instance::{DataInstance, InstanceArena};
 pub use search::{backward_elim, forward_sel};
-pub use evaluate::Evaluator;
-pub use classifier::{NNClassifier, Classifier};
-
-
-pub type Arr1f32 = ArrayBase<OwnedRepr<f64>, Dim<[usize; 1]>>;
-pub type Arr2f32 = ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>;
-pub type Arr3f32 = ArrayBase<OwnedRepr<f64>, Dim<[usize; 3]>>;
