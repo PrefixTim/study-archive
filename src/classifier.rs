@@ -1,78 +1,99 @@
-use ndarray::{Array, ArrayBase, Dim};
+use super::feature::FeatureSet;
+use super::instance::{InstanceArena, InstanceId, Label};
+use itertools::Itertools;
 
-use super::{Arr1f32, Arr2f32, Arr3f32};
-
-pub trait Classifier: Clone {
-    fn test(&self, instid: usize, fset: &Arr1f32) -> f64;
-    fn train(&mut self, train_data: Arr1f32);
+pub trait Classifier {
+    fn test(&self, instid: InstanceId, fset: &FeatureSet) -> Label;
+    fn train(&mut self, train_data: Vec<usize>);
 }
 
-#[derive(Clone)]
-pub struct NNClassifier {
-    distances: Arr3f32,
-    label: Arr1f32,
-    train_data: Arr1f32,
+pub struct NNClassifier<'a> {
+    data: &'a InstanceArena,
+    train_data: Vec<usize>,
 }
 
-impl NNClassifier {
-    pub fn new((label, features): &(Arr1f32, Arr2f32)) -> Self {
-        let train_data: Arr1f32 = Array::ones(label.len());
-        let label: Arr1f32 = label.clone();
-        let nlabel = features.shape()[0];
-        let nfeatures = features.shape()[1];
+impl<'a> NNClassifier<'a> {
+    pub fn new(data: &'a InstanceArena) -> Self {
+        let train_data: Vec<usize> = Vec::with_capacity(0);
+        NNClassifier { data, train_data }
+    }
+}
 
-        let features: Arr2f32 = features
-            .clone()
-            .to_shape((nfeatures * nlabel, 1))
-            .unwrap()
-            .to_owned();
-        let tmp1 = features
-            .dot(&Array::ones((1, label.len())))
-            .t()
-            .to_shape((nlabel, nlabel, nfeatures))
-            .unwrap()
-            .to_owned();
+impl Classifier for NNClassifier<'_> {
+    fn test(&self, instid: InstanceId, fset: &FeatureSet) -> Label {
+        let other = &self.data[instid];
+        self.train_data
+            .iter()
+            .map(|i| &self.data[*i])
+            .map(|d| {
+                let tmp = fset.get_features();
+                (
+                    tmp.iter()
+                        .map(|&i| {
+                            let tmp = other.features[i] - d.features[i];
+                            tmp * tmp
+                        })
+                        .sum::<f64>()
+                        .sqrt(),
+                    d.label,
+                )
+            })
+            .min_by(|a, b| a.0.total_cmp(&b.0))
+            .unwrap_or_default()
+            .1
+    }
 
-        let mut tmp = tmp1.clone();
-        tmp.swap_axes(0, 1);
+    fn train(&mut self, train_data: Vec<usize>) {
+        self.train_data = train_data;
+    }
+}
 
-        let distances = (tmp1 - tmp).mapv(|v| v * v);
-        NNClassifier {
-            distances,
-            label,
+pub struct KNNClassifier<'a> {
+    data: &'a InstanceArena,
+    train_data: Vec<usize>,
+    k: usize,
+}
+
+impl<'a> KNNClassifier<'a> {
+    pub fn new(data: &'a InstanceArena, k: usize) -> Self {
+        let train_data: Vec<usize> = Vec::with_capacity(0);
+        Self {
+            data,
             train_data,
+            k,
         }
     }
 }
 
-impl Classifier for NNClassifier {
-    fn test(&self, instid: usize, fset: &Arr1f32) -> f64 {
-
-        // let other = &self.data[instid];
-        // self.train_data
-        //     .iter()
-        //     .map(|i| &self.data[*i])
-        //     .map(|d| {
-        //         let tmp = fset.get_features();
-        //         (
-        //             tmp
-        //                 .iter()
-        //                 .map(|&i| {
-        //                     let tmp = other.features[i] - d.features[i];
-        //                     tmp * tmp
-        //                 })
-        //                 .sum::<f64>()
-        //                 .sqrt(),
-        //             d.label,
-        //         )
-        //     })
-        //     .min_by(|a, b| a.0.total_cmp(&b.0))
-        //     .unwrap_or_default()
-        //     .1;
-        todo!()
+impl Classifier for KNNClassifier<'_> {
+    fn test(&self, instid: InstanceId, fset: &FeatureSet) -> Label {
+        let other = &self.data[instid];
+        *self.train_data
+            .iter()
+            .map(|i| &self.data[*i])
+            .map(|d| {
+                let tmp = fset.get_features();
+                (
+                    tmp.iter()
+                        .map(|&i| {
+                            let tmp = other.features[i] - d.features[i];
+                            tmp * tmp
+                        })
+                        .sum::<f64>()
+                        .sqrt(),
+                    d.label as i32,
+                )
+            })
+            .sorted_by(|a, b| a.0.total_cmp(&b.0))
+            .zip((0..self.k).into_iter())
+            .counts_by(|e| e.0 .1)
+            .iter()
+            .max_by(|a, b| a.1.cmp(&b.1))
+            .unwrap()
+            .0 as f64
     }
 
-    fn train(&mut self, train_data: Arr1f32) {
+    fn train(&mut self, train_data: Vec<usize>) {
         self.train_data = train_data;
     }
 }
