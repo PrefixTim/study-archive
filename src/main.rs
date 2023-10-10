@@ -100,24 +100,24 @@ mod mysqrt {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let map = (0..=20000).map(|x| x as f64 / 10000f64);
-    // let root = BitMapBackend::new("0.png", (640, 480)).into_drawing_area();
-    // root.fill(&WHITE)?;
-    // let mut chart = ChartBuilder::on(&root).caption("sqrt()", ("sans-serif", 50).into_font()).margin(5).x_label_area_size(30).y_label_area_size(30).build_cartesian_2d(1f64..20f64, 0f64..1.5f64)?;
-    //
-    //
-    // chart.configure_mesh().draw()?;
-    // chart.draw_series(LineSeries::new(
-    //     map.clone().map(|x| (x, x.sqrt())),
-    //     &BLUE,
-    // ))?.label("y = x-^.5").legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
-    // chart.draw_series(LineSeries::new(
-    //     map.clone().map(|x| (x, x*inv_sqrt_approx_b(x))),
-    //     &RED,
-    // ))?.label("y ~= x^-.5").legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
-    //
-    // chart.configure_series_labels().background_style(&WHITE.mix(0.8)).border_style(&BLACK).draw()?;
-    //
-    // root.present()?;
+    let root = BitMapBackend::new("0.png", (640, 480)).into_drawing_area();
+    root.fill(&WHITE)?;
+    let mut chart = ChartBuilder::on(&root).caption("sqrt()", ("sans-serif", 50).into_font()).margin(5).x_label_area_size(30).y_label_area_size(30).build_cartesian_2d(1f64..20f64, 0f64..1.5f64)?;
+
+
+    chart.configure_mesh().draw()?;
+    chart.draw_series(LineSeries::new(
+        map.clone().map(|x| (x, x.sqrt())),
+        &BLUE,
+    ))?.label("y = x-^.5").legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
+    chart.draw_series(LineSeries::new(
+        map.clone().map(|x| (x, x*inv_sqrt_approx_b(x))),
+        &RED,
+    ))?.label("y ~= x^-.5").legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
+
+    chart.configure_series_labels().background_style(&WHITE.mix(0.8)).border_style(&BLACK).draw()?;
+
+    root.present()?;
     let map = map.clone().filter(|x| f64::abs(x.sqrt() - x.my_sqrt_c()) > f64::EPSILON);
     // map.clone().for_each(|x| {
     //     println!("{:#b}", x.sqrt().to_bits());
