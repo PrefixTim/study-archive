@@ -7,3 +7,6 @@ edition = "2021"
 
 [dependencies]
 plotters = "0.3.3"
+
+[profile.release]
+lto = true
