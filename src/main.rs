@@ -14,33 +14,12 @@ mod mysqrt {
         fn my_sqrt_a(self) -> f64;
         fn my_sqrt_b(self) -> f64;
         fn my_sqrt_c(self) -> f64;
+        fn my_sqrt_d(self) -> f64;
+
     }
 
-    pub fn inv_sqrt_approx_a(num: f64) -> f64 {
+    pub fn inv_sqrt_approx(num: f64) -> f64 {
         f64::from_bits(0x5FE6EB50C7B537A9 - (num.to_bits() >> 1))
-    }
-    // float invSqrt(float x) {
-    //     float xhalf = 0.5f * x;
-    //     union {
-    //         float x;
-    //         int i;
-    //     } u;
-    //     u.x = x;
-    //     u.i = 0x5f375a86 - (u.i >> 1);
-    //     /* The next line can be repeated any number of times to increase accuracy */
-    //     u.x = u.x * (1.5f - xhalf * u.x * u.x);
-    //     return u.x;
-    // }
-    pub fn inv_sqrt_approx_b(num: f64) -> f64 {
-        let half = 0.5 * num;
-        let mut aprox = inv_sqrt_approx_a(num);
-        aprox *= 1.5 - half * aprox *  aprox;
-        aprox *= 1.5 - half * aprox *  aprox;
-        aprox *= 1.5 - half * aprox *  aprox;
-        aprox *= 1.5 - half * aprox *  aprox;
-        aprox *= 1.5 - half * aprox *  aprox;
-        aprox *= 1.5 - half * aprox *  aprox;
-        aprox
     }
 
     impl MySqrt for f64 {
@@ -93,46 +72,81 @@ mod mysqrt {
         }
 
         fn my_sqrt_c(self) -> f64 {
-            self * inv_sqrt_approx_b(self)
+            let mut inv_sqrt_approx = inv_sqrt_approx(self);
+            let mut tmp;
+            tmp = -self * inv_sqrt_approx * inv_sqrt_approx;
+            inv_sqrt_approx *= tmp.mul_add(3f64 / 8f64, 10f64 / 8f64).mul_add(tmp, 15f64 / 8f64);
+            tmp = -self * inv_sqrt_approx * inv_sqrt_approx;
+            inv_sqrt_approx *= tmp.mul_add(3f64 / 8f64, 10f64 / 8f64).mul_add(tmp, 15f64 / 8f64);
+            tmp = -self * inv_sqrt_approx * inv_sqrt_approx;
+            inv_sqrt_approx *= tmp.mul_add(3f64 / 8f64, 10f64 / 8f64).mul_add(tmp, 15f64 / 8f64);
+            tmp = -self * inv_sqrt_approx * inv_sqrt_approx;
+            inv_sqrt_approx *= tmp.mul_add(3f64 / 8f64, 10f64 / 8f64).mul_add(tmp, 15f64 / 8f64);
+            tmp = -self * inv_sqrt_approx * inv_sqrt_approx;
+            inv_sqrt_approx *= tmp.mul_add(3f64 / 8f64, 10f64 / 8f64).mul_add(tmp, 15f64 / 8f64);
+            self * inv_sqrt_approx
+        }
+
+        fn my_sqrt_d(self) -> f64 {
+            let mut inv_sqrt_approx = inv_sqrt_approx(self);
+            let mut sqrt = self * inv_sqrt_approx;
+            let mut h = inv_sqrt_approx * 0.5;
+            let mut r;
+            r = sqrt.mul_add(-h, 0.5);
+            sqrt = r.mul_add(sqrt, sqrt);
+            h = r.mul_add(h, h);
+            r = sqrt.mul_add(-h, 0.5);
+            sqrt = r.mul_add(sqrt, sqrt);
+            h = r.mul_add(h, h);
+            r = sqrt.mul_add(-h, 0.5);
+            sqrt = r.mul_add(sqrt, sqrt);
+            h = r.mul_add(h, h);
+            r = sqrt.mul_add(-h, 0.5);
+            r.mul_add(sqrt, sqrt)
         }
     }
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let map = (0..=20000).map(|x| x as f64 / 10000f64);
-    let root = BitMapBackend::new("0.png", (640, 480)).into_drawing_area();
-    root.fill(&WHITE)?;
-    let mut chart = ChartBuilder::on(&root).caption("sqrt()", ("sans-serif", 50).into_font()).margin(5).x_label_area_size(30).y_label_area_size(30).build_cartesian_2d(1f64..20f64, 0f64..1.5f64)?;
+    let map = (1..=102400).map(|x| (x as f64) / 10000f64).map(|x| x*x);
+    // let root = BitMapBackend::new("0.png", (640, 480)).into_drawing_area();
+    // root.fill(&WHITE)?;
+    // let mut chart = ChartBuilder::on(&root).caption("sqrt()", ("sans-serif", 50).into_font()).margin(5).x_label_area_size(30).y_label_area_size(30).build_cartesian_2d(1f64..1024f64, 0f64..64f64)?;
+    //
+    //
+    // chart.configure_mesh().draw()?;
+    // chart.draw_series(LineSeries::new(
+    //     map.clone().map(|x| (x, x.sqrt())),
+    //     &BLUE,
+    // ))?.label("y = x-^.5").legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
+    // chart.draw_series(LineSeries::new(
+    //     map.clone().map(|x| (x, x.my_sqrt_c())),
+    //     &RED,
+    // ))?.label("y ~= x^-.5").legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
+    //
+    // chart.configure_series_labels().background_style(&WHITE.mix(0.8)).border_style(&BLACK).draw()?;
+    //
+    // root.present()?;
 
+    let fmap = map.clone().map(|x| i128::abs(x.sqrt().to_bits() as i128 - x.my_sqrt_a().to_bits() as i128)).filter(|&x| x != 0);
+    println!("{}/{}", fmap.clone().count(), map.clone().count());
+    println!("{}", fmap.clone().sum::<i128>());
+    println!("{}", fmap.clone().max().unwrap());
 
-    chart.configure_mesh().draw()?;
-    chart.draw_series(LineSeries::new(
-        map.clone().map(|x| (x, x.sqrt())),
-        &BLUE,
-    ))?.label("y = x-^.5").legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
-    chart.draw_series(LineSeries::new(
-        map.clone().map(|x| (x, x*inv_sqrt_approx_b(x))),
-        &RED,
-    ))?.label("y ~= x^-.5").legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
+    let fmap = map.clone().map(|x| i128::abs(x.sqrt().to_bits() as i128 - x.my_sqrt_b().to_bits() as i128)).filter(|&x| x != 0);
+    println!("{}/{}", fmap.clone().count(), map.clone().count());
+    println!("{}", fmap.clone().sum::<i128>());
+    println!("{}", fmap.clone().max().unwrap());
 
-    chart.configure_series_labels().background_style(&WHITE.mix(0.8)).border_style(&BLACK).draw()?;
+    let fmap = map.clone().map(|x| i128::abs(x.sqrt().to_bits() as i128 - x.my_sqrt_c().to_bits() as i128)).filter(|&x| x != 0);
+    println!("{}/{}", fmap.clone().count(), map.clone().count());
+    println!("{}", fmap.clone().sum::<i128>());
+    println!("{}", fmap.clone().max().unwrap());
 
-    root.present()?;
-    let map = map.clone().filter(|x| f64::abs(x.sqrt() - x.my_sqrt_c()) > f64::EPSILON);
-    // map.clone().for_each(|x| {
-    //     println!("{:#b}", x.sqrt().to_bits());
-    //     println!("{:#b}", x.my_sqrt_c().to_bits());
-    //     println!("{:#b}", (x.sqrt() - x.my_sqrt_c()).to_bits());
-    //     println!();
-    // });
-    // println!("{}", map.clone().map(|x| f64::abs(x.sqrt() - x.my_sqrt_c())).sum::<f64>());
-    // map.for_each(|x| if f64::abs(x.sqrt() - x.my_sqrt_c()) > f64::EPSILON {println!("{}", x)});
-    println!("{}", map.count());
+    let fmap = map.clone().map(|x| i128::abs(x.sqrt().to_bits() as i128 - x.my_sqrt_d().to_bits() as i128)).filter(|&x| x != 0);
+    println!("{}/{}", fmap.clone().count(), map.clone().count());
+    println!("{}", fmap.clone().sum::<i128>());
+    println!("{}", fmap.clone().max().unwrap());
 
-    // let x = 199.997f64;
-    // println!("{}", x.sqrt());
-    // println!("{}", x.my_sqrt());
-    // println!("{:#b}", x.sqrt().to_bits());
-    // println!("{:#b}", x.my_sqrt().to_bits());
     Ok(())
 }
