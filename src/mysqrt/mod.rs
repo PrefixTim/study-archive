@@ -17,6 +17,7 @@ pub fn inv_sqrt_approx(num: f64) -> f64 {
 }
 
 impl MySqrt for f64 {
+    #[inline]
     fn my_sqrt_a(self) -> f64 {
         if self.is_sign_negative() || self.is_nan() || self.is_infinite() { return f64::NAN; }
         let num_bits = self.to_bits();
@@ -44,6 +45,7 @@ impl MySqrt for f64 {
         sqrt * if exp % 2 == 0 { 1f64 } else { SQRT_2 } * sqrt_exp
     }
 
+    #[inline]
     fn my_sqrt_b(self) -> f64 {
         if self.is_sign_negative() || self.is_nan() || self.is_infinite() { return f64::NAN; }
         let num_bits = self.to_bits();
@@ -65,6 +67,7 @@ impl MySqrt for f64 {
         manf * inv_sqrt_man * if exp % 2 == 0 { 1f64 } else { SQRT_2 } * sqrt_exp
     }
 
+    #[inline]
     fn my_sqrt_c(self) -> f64 {
         let mut inv_sqrt_approx = inv_sqrt_approx(self);
         let mut tmp;
@@ -81,6 +84,7 @@ impl MySqrt for f64 {
         self * inv_sqrt_approx
     }
 
+    #[inline]
     fn my_sqrt_d(self) -> f64 {
         let inv_sqrt_approx = inv_sqrt_approx(self);
         let mut sqrt = self * inv_sqrt_approx;
@@ -102,14 +106,20 @@ impl MySqrt for f64 {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    extern crate test;
+
+    use test::Bencher;
+
     use plotters::prelude::*;
+
+    use super::*;
+
     #[test]
     fn test() -> Result<(), Box<dyn std::error::Error>> {
-        let map = (1..=102400).map(|x| (x as f64) / 10000f64).map(|x| x * x);
+        let map = (1..=2_000_000).map(|x| (x as f64) / 1024f64).map(|x| x * x);
         let root = BitMapBackend::new("0.png", (640, 480)).into_drawing_area();
         root.fill(&WHITE)?;
-        let mut chart = ChartBuilder::on(&root).caption("sqrt()", ("sans-serif", 50).into_font()).margin(5).x_label_area_size(30).y_label_area_size(30).build_cartesian_2d(1f64..1024f64, 0f64..64f64)?;
+        let mut chart = ChartBuilder::on(&root).caption("mysqrt()", ("sans-serif", 50).into_font()).margin(5).x_label_area_size(30).y_label_area_size(30).build_cartesian_2d(1f64..1024f64, 0f64..64f64)?;
 
 
         chart.configure_mesh().draw()?;
@@ -145,8 +155,36 @@ mod tests {
         println!("{}/{}", fmap.clone().count(), map.clone().count());
         println!("{}", fmap.clone().sum::<i128>());
         println!("{}", fmap.clone().max().unwrap());
-
+        assert!(true);
         Ok(())
     }
 
+    fn get_list(f: fn(f64) -> f64) -> f64 {
+        (1..=100_000u64).map(|x| (x as f64) / 1_000f64).map(|x| f(x)).sum()
+    }
+
+    #[bench]
+    fn bench_sqrt(b: &mut Bencher) {
+        b.iter(|| get_list(f64::sqrt));
+    }
+
+    #[bench]
+    fn bench_sqrta(b: &mut Bencher) {
+        b.iter(|| get_list(f64::my_sqrt_a));
+    }
+
+    #[bench]
+    fn bench_sqrtb(b: &mut Bencher) {
+        b.iter(|| get_list(f64::my_sqrt_b));
+    }
+
+    #[bench]
+    fn bench_sqrtc(b: &mut Bencher) {
+        b.iter(|| get_list(f64::my_sqrt_c));
+    }
+
+    #[bench]
+    fn bench_sqrtd(b: &mut Bencher) {
+        b.iter(|| get_list(f64::my_sqrt_d));
+    }
 }
