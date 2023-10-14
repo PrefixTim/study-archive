@@ -19,10 +19,9 @@ lto = true
 
 [[bin]]
 name = "sqrt-bin"
-path = "src/main.rs"
-test = false
-bench = false
+path = "src/sqrt_exapl.rs"
 
 [[bin]]
 name = "empty-app"
 path = "src/dummy.rs"
+
