@@ -1,29 +1,31 @@
-// #![feature(test)]
+#![feature(test)]
 
-use std::net::SocketAddr;
-use axum::http::StatusCode;
-use axum::{Json, Router};
-use axum::routing::get;
-use chrono::{DateTime, Local};
+use mysqrt::MySqrt;
 
 mod mysqrt;
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = SocketAddr::from(([0, 0, 0, 0], 80));
+fn main() {
+    println!("enter numbers line by line. Enter empty line to finish");
+    let mut vec: Vec<f64> = Vec::new();
+    let mut buf;
+    loop {
+        buf = String::new();
+        std::io::stdin().read_line(&mut buf).unwrap();
+        if let Some(num) = buf.trim().parse::<f64>().ok() {
+            vec.push(num);
+        } else {
+            break;
+        }
+    }
 
-    let app = Router::new()
-        .route("/", get(health))
-        .route("/time", get(time_json));
+    println!("{:20}\t{:20}\t{:20}", "input", "my_sqrt_impl", "sqrt");
+    let sqrts = vec.iter().map(|num| {
+        let sqrts = (num, num.goldschmidt_sqrt_reg(), num.sqrt());
+        println!("{:20}\t{:20}\t{:20}", sqrts.0, sqrts.1, sqrts.2);
+        sqrts
+    });
 
-    axum::Server::bind(&addr).serve(app.into_make_service()).await.unwrap();
-    Ok(())
-}
+    let total_err = sqrts.filter(|(num, my_sqrt, sqrt)| !(sqrt.is_nan() || my_sqrt.is_nan() || num.is_infinite())).map(|(_num, my_sqrt, sqrt)| (sqrt - my_sqrt).abs()).sum::<f64>();
 
-async fn health() -> StatusCode {
-    StatusCode::OK
-}
-
-async fn time_json() -> Json<DateTime<Local>>  {
-    Json(chrono::offset::Local::now())
+    println!("total err: \t{total_err}");
 }
