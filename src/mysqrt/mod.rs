@@ -218,42 +218,42 @@ mod tests {
     }
 
 
-    fn get_list(f: fn(f64) -> f64) -> f64 {
-        (0..=100_000u64).map(|x| (x as f64) / 1_000f64).map(|x| f(x)).sum()
-    }
-
-    #[bench]
-    fn bench_sqrt(b: &mut Bencher) {
-        b.iter(|| get_list(f64::sqrt));
-    }
-
-    #[bench]
-    fn bench_halley_sqrt(b: &mut Bencher) {
-        b.iter(|| get_list(f64::halley_sqrt));
-    }
-
-    #[bench]
-    fn bench_goldschmidt_sqrt(b: &mut Bencher) {
-        b.iter(|| get_list(f64::goldschmidt_sqrt));
-    }
-
-    #[bench]
-    fn bench_halley_sqrt_seprt(b: &mut Bencher) {
-        b.iter(|| get_list(f64::halley_sqrt_seprt));
-    }
-
-    #[bench]
-    fn bench_goldschmidt_sqrt_seprt(b: &mut Bencher) {
-        b.iter(|| get_list(f64::goldschmidt_sqrt_seprt));
-    }
-
-    #[bench]
-    fn bench_halley_sqrt_reg(b: &mut Bencher) {
-        b.iter(|| get_list(f64::halley_sqrt_reg));
-    }
-
-    #[bench]
-    fn bench_goldschmidt_sqrt_reg(b: &mut Bencher) {
-        b.iter(|| get_list(f64::goldschmidt_sqrt_reg));
-    }
+    // fn get_list(f: fn(f64) -> f64) -> f64 {
+    //     (0..=100_000u64).map(|x| (x as f64) / 1_000f64).map(|x| f(x)).sum()
+    // }
+    //
+    // #[bench]
+    // fn bench_sqrt(b: &mut Bencher) {
+    //     b.iter(|| get_list(f64::sqrt));
+    // }
+    //
+    // #[bench]
+    // fn bench_halley_sqrt(b: &mut Bencher) {
+    //     b.iter(|| get_list(f64::halley_sqrt));
+    // }
+    //
+    // #[bench]
+    // fn bench_goldschmidt_sqrt(b: &mut Bencher) {
+    //     b.iter(|| get_list(f64::goldschmidt_sqrt));
+    // }
+    //
+    // #[bench]
+    // fn bench_halley_sqrt_seprt(b: &mut Bencher) {
+    //     b.iter(|| get_list(f64::halley_sqrt_seprt));
+    // }
+    //
+    // #[bench]
+    // fn bench_goldschmidt_sqrt_seprt(b: &mut Bencher) {
+    //     b.iter(|| get_list(f64::goldschmidt_sqrt_seprt));
+    // }
+    //
+    // #[bench]
+    // fn bench_halley_sqrt_reg(b: &mut Bencher) {
+    //     b.iter(|| get_list(f64::halley_sqrt_reg));
+    // }
+    //
+    // #[bench]
+    // fn bench_goldschmidt_sqrt_reg(b: &mut Bencher) {
+    //     b.iter(|| get_list(f64::goldschmidt_sqrt_reg));
+    // }
 }

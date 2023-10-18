@@ -29,3 +29,58 @@ fn main() {
 
     println!("total err: \t{total_err}");
 }
+
+#[cfg(test)]
+mod tests {
+    extern crate test;
+
+    use std::sync::{Arc, Mutex};
+    use test::Bencher;
+
+    #[bench]
+    fn single_thread(b: &mut Bencher) {
+        b.iter(|| {
+            let n = std::hint::black_box(1_000_000);
+            let mut q = Vec::with_capacity(n);
+            (0..n).for_each(|e| q.push(e));
+            assert_eq!(q.len(), 1_000_000);
+            assert_eq!(q[12_345], 12_345);
+        });
+    }
+
+    #[bench]
+    fn two_thread_naive(b: &mut Bencher) {
+        b.iter(|| {
+            let n = std::hint::black_box(1_000_000);
+            let mut arc_q = Arc::new(Mutex::new(Vec::with_capacity(n)));
+
+            (0..2).map(|i| {
+                let q = arc_q.clone();
+                std::thread::spawn(move || {
+                    ((i * n / 2)..((i + 1) * n / 2)).for_each(|e| q.lock().unwrap().push(e));
+                })
+            }).for_each(|h| h.join().unwrap());
+
+            assert_eq!(arc_q.lock().unwrap().len(), 1_000_000);
+        });
+    }
+
+    #[bench]
+    fn two_thread_append(b: &mut Bencher) {
+        b.iter(|| {
+            let n = std::hint::black_box(1_000_000);
+            let mut arc_q = Arc::new(Mutex::new(Vec::with_capacity(n)));
+
+            (0..2).map(|i| {
+                let mut vec = Vec::with_capacity(n / 2);
+                let q = arc_q.clone();
+                std::thread::spawn(move || {
+                    ((i * n / 2)..((i + 1) * n / 2)).for_each(|e| vec.push(e));
+                    q.lock().unwrap().append(&mut vec);
+                })
+            }).for_each(|h| h.join().unwrap());
+
+            assert_eq!(arc_q.lock().unwrap().len(), 1_000_000);
+        });
+    }
+}
