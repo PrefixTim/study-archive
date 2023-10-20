@@ -12,7 +12,7 @@ except socket.error as err:
 
 print('Socket Created')
 
-host = 'www.google.com'
+host = 'www.basketball-reference.com'
 
 try:
     remote_ip = socket.gethostbyname(host)
@@ -30,7 +30,7 @@ s.connect((remote_ip, 80))
 print('Socket Connected to ' + host + ' on ip ' + remote_ip)
 
 # Send some data to remote server
-message = b"GET / HTTP/1.1\r\n\r\n"
+message = f"GET / HTTP/1.1\r\nHost: {host}\r\nAccept: */*\r\n\r\n".encode()
 
 try:
     # Set the whole string
