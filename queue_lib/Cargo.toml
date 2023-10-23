@@ -1,11 +1,12 @@
 [package]
-name = "atomic-queue"
+name = "queue_lib"
 version = "0.1.0"
 edition = "2021"
 
-
 [dependencies]
+itertools = "0.11.0"
 
 [lib]
-name = "atomic_queue"
+name = "queue_lib"
+# crate-type = ["staticlib"]
 crate-type = ["cdylib"]
