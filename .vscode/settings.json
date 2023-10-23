@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.cargo-lock": "c",
+        "my_header.h": "c"
+    }
+}
