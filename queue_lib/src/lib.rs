@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use std::{fs::File, io::Write};
+use std::{fs::File, io::Write, iter, cmp::Reverse};
 
 pub const N: usize = 1_000;
 pub const N2: usize = N;
@@ -39,31 +39,15 @@ impl Stack {
 
     #[no_mangle]
     pub extern "C" fn verify(&self) -> bool {
-        let mut res = true;
-        let mut cloned = self.data.clone();
-        cloned.sort();
-        cloned.iter().scan(0, |state, el| {
-            res &= *el == *state;
-            Some(*state + 1)
-        }).collect_vec();
-        if !res {
+        let mut counts = vec![0; N];
+        self.data.iter().for_each(|&e| counts[e as usize] += 1);
+        let outliers = counts.iter().enumerate().filter(|(_, &x)| x != 1).collect_vec();//.map(|(n, counts)|)
+    
+        if !outliers.is_empty() {
             let mut file = File::create("FaileLog.txt").unwrap();
-            print!("{}", self.data.iter().all_unique());
-            // file.write_fmt(fmt)
-
-            file.write_fmt(format_args!(
-                "head{}\n{:?}\n---\n",
-                self.head,
-                cloned
-                    .iter()
-                    .counts()
-                    .iter()
-                    .filter(|(_, p)| **p != 1)
-                    .collect_vec()
-            ))
-            .unwrap();
+            file.write_fmt(format_args!("head{}\n{:?}\n---\n", self.head, outliers)).unwrap();
         }
-        res
+        outliers.is_empty()
     }
 }
 
