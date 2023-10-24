@@ -13,9 +13,9 @@
 
 namespace queues {
 
-constexpr static const uintptr_t N = 1000;
+constexpr static const uintptr_t N = 1000000;
 
-constexpr static const uintptr_t N2 = (N + 100);
+constexpr static const uintptr_t N2 = N;
 
 struct Stack {
   uintptr_t head;

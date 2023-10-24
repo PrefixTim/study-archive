@@ -1,8 +1,26 @@
+#[macro_use]
+extern crate lazy_static;
+
 use itertools::Itertools;
 use std::{fs::File, io::Write};
+use std::collections::HashMap;
 
-pub const N: usize = 1_000;
+pub const N: usize = 1_000_000;
 pub const N2: usize = N;
+lazy_static!{
+    static ref VEC_ODD: Vec<i32> = vec_with_n(1, 2);
+    static ref VEC_EVN: Vec<i32> = vec_with_n(0, 2);
+}
+
+fn vec_with_n(offset: usize, step: usize) -> Vec<i32>{
+    let mut i = offset;
+    let mut res = Vec::new();
+    while i < N {
+        res.push(i as i32);
+        i += step;
+    }
+    res
+}
 
 #[repr(C)]
 #[derive(Debug)]
@@ -39,15 +57,15 @@ impl Stack {
 
     #[no_mangle]
     pub extern "C" fn verify(&self) -> bool {
-        let mut counts = vec![0; N];
-        self.data.iter().for_each(|&e| counts[e as usize] += 1);
-        let outliers = counts
+        let counts: HashMap<&i32, usize> = self.data.iter().counts();
+        let mut outliers = counts
             .iter()
-            .enumerate()
             .filter(|(_, &x)| x != 1)
-            .collect_vec(); //.map(|(n, counts)|)
+            .collect_vec(); 
+        outliers.sort_by(|x, y| x.0.cmp(y.0));
+        if !outliers.is_empty() { // most of the errors
 
-        if !outliers.is_empty() {
+            // let missing = ALL_COUNTS.iter().filter(|(num, &count)| counts.contains_key(num) && counts[num] == count).collect_vec();
             let mut file = File::create("FaileLog.txt").unwrap();
             file.write_fmt(format_args!("head{}\n{:?}\n---\n", self.head, outliers))
                 .unwrap();
