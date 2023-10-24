@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use std::{fs::File, io::Write, iter, cmp::Reverse};
+use std::{fs::File, io::Write};
 
 pub const N: usize = 1_000;
 pub const N2: usize = N;
@@ -41,11 +41,16 @@ impl Stack {
     pub extern "C" fn verify(&self) -> bool {
         let mut counts = vec![0; N];
         self.data.iter().for_each(|&e| counts[e as usize] += 1);
-        let outliers = counts.iter().enumerate().filter(|(_, &x)| x != 1).collect_vec();//.map(|(n, counts)|)
-    
+        let outliers = counts
+            .iter()
+            .enumerate()
+            .filter(|(_, &x)| x != 1)
+            .collect_vec(); //.map(|(n, counts)|)
+
         if !outliers.is_empty() {
             let mut file = File::create("FaileLog.txt").unwrap();
-            file.write_fmt(format_args!("head{}\n{:?}\n---\n", self.head, outliers)).unwrap();
+            file.write_fmt(format_args!("head{}\n{:?}\n---\n", self.head, outliers))
+                .unwrap();
         }
         outliers.is_empty()
     }
