@@ -1,13 +1,15 @@
 [package]
-name = "queue_lib"
+name = "stack_lib"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 itertools = "0.11.0"
 lazy_static = "1.4.0"
+cbindgen = "0.26.0"
+rand = "0.8.5"
 
 [lib]
-name = "queue_lib"
+name = "stack_lib"
 # crate-type = ["staticlib"]
 crate-type = ["cdylib"]
