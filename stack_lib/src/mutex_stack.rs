@@ -79,8 +79,8 @@ mod c_compat {
     }
 
     #[no_mangle]
-    pub extern "C" fn verify_mutex_stack(stack: &MutexStack) -> bool {
-        crate::verify::verify(&stack.data, *stack.head.lock().unwrap())
+    pub extern "C" fn verify_mutex_stack(stack: &MutexStack, total: usize) -> bool {
+        crate::verify::verify(&stack.data, *stack.head.lock().unwrap(), total)
     }
 }
 

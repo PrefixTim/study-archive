@@ -16,9 +16,12 @@ corrosion_experimental_cbindgen(
     HEADER_NAME stack_lib.h
 )
 
-add_executable(bench_stack ./threaded-expl/bench_stack.cpp)
-target_link_libraries(bench_stack PUBLIC stack_lib)
+add_executable(${PROJECT_NAME} ./threaded-expl/bench_stack.cpp)
+target_link_libraries(${PROJECT_NAME} PUBLIC stack_lib)
 
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+   COMMAND python3 "${CMAKE_CURRENT_LIST_DIR}/graph/plot.py"
+)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

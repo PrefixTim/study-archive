@@ -74,8 +74,8 @@ mod c_compat {
     }
 
     #[no_mangle]
-    pub extern "C" fn verify_atomic_stack(stack: &AtomicStack) -> bool {
-        crate::verify::verify(&stack.data, stack.head.load(Ordering::Acquire))
+    pub extern "C" fn verify_atomic_stack(stack: &AtomicStack, total: usize) -> bool {
+        crate::verify::verify(&stack.data, stack.head.load(Ordering::Acquire), total)
     }
 }
 

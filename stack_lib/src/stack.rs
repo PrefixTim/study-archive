@@ -35,8 +35,8 @@ impl Stack {
 }
 
 #[no_mangle]
-pub extern "C" fn verify_stack(stack: &Stack) -> bool {
-    super::verify::verify(&stack.data, stack.head)
+pub extern "C" fn verify_stack(stack: &Stack, total: usize) -> bool {
+    super::verify::verify(&stack.data, stack.head, total)
 }
 
 #[cfg(test)]

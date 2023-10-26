@@ -1,12 +1,12 @@
-#[macro_use]
-extern crate lazy_static;
+// #[macro_use]
+// extern crate lazy_static;
 
 mod stack;
 mod atomic_stack;
 mod mutex_stack;
 mod verify;
 
-pub const N: usize = 100_000;
+pub const N: usize = 1_000_000;
 
 // pub use stack::*;
 // pub use atomic_stack::*;
