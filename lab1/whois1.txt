@@ -1,0 +1,56 @@
+% This is the RIPE Database query service.
+% The objects are in RPSL format.
+%
+% The RIPE Database is subject to Terms and Conditions.
+% See https://apps.db.ripe.net/docs/HTML-Terms-And-Conditions
+
+% Note: this output has been filtered.
+%       To receive output for a database update, use the "-B" flag.
+
+% Information related to '195.93.153.0 - 195.93.153.127'
+
+% Abuse contact for '195.93.153.0 - 195.93.153.127' is 'abuse@ps.kz'
+
+inetnum:        195.93.153.0 - 195.93.153.127
+netname:        PSKZ-HOSTING-2308
+country:        KZ
+admin-c:        PSKZ117-RIPE
+tech-c:         PSKZ117-RIPE
+status:         ASSIGNED PA
+mnt-by:         MNT-PS
+created:        2016-10-04T13:31:33Z
+last-modified:  2016-10-04T13:31:33Z
+source:         RIPE
+org:            ORG-PSKZ82-RIPE
+
+organisation:   ORG-PSKZ82-RIPE
+org-name:       HOST.KZ
+org-type:       OTHER
+address:        ul. Makatayeva, dom 117, liter A, of.520, 050000, Almaty, Almaty, Kazakhstan
+mnt-ref:        MNT-PS
+mnt-by:         MNT-PS
+created:        2016-10-04T13:31:33Z
+last-modified:  2017-10-30T16:53:07Z
+source:         RIPE # Filtered
+
+person:         Yevgeniya Kalashnikova
+address:        ul. Makatayeva, dom 117, liter A, of.520, 050000, Almaty, Almaty, Kazakhstan
+phone:          +7-701-7445151
+mnt-by:         MNT-PS
+nic-hdl:        PSKZ117-RIPE
+created:        2016-10-04T13:31:32Z
+last-modified:  2016-10-04T13:31:32Z
+source:         RIPE # Filtered
+
+% Information related to '195.93.153.0/24AS48716'
+
+route:          195.93.153.0/24
+origin:         AS48716
+mnt-by:         MNT-PS
+created:        2016-08-22T11:13:19Z
+last-modified:  2016-08-22T11:13:19Z
+source:         RIPE
+
+% This query was served by the RIPE Database Query Service version 1.108 (SHETLAND)
+
+
