@@ -7,6 +7,7 @@ pub struct AtomicStack {
     data: [i32; N],
 }
 
+// Like a naive stack, but with atomic value for the head, utilizing fetch_add operation for thread safety
 impl AtomicStack {
     fn new() -> Self {
         Self {
@@ -28,6 +29,7 @@ impl AtomicStack {
     }
 }
 
+// A compatability stuff for C
 mod c_compat {
     use super::*;
 

@@ -7,48 +7,33 @@ use std::{fs::File, io::Write};
 
 use super::N;
 
-// lazy_static! {
-//     // static ref VEC_ODD: Vec<i32> = vec_with_n(1, 2);
-//     // static ref VEC_EVN: Vec<i32> = vec_with_n(0, 2);
-//     static ref VEC_ALL: Vec<i32> = vec_with_n(0, 1);
-// }
-
-// fn vec_with_n(offset: usize, step: usize) -> Vec<i32> {
-//     let mut i = offset;
-//     let mut res = Vec::new();
-//     while i < N {
-//         res.push(i as i32);
-//         i += step;
-//     }
-//     res
-// }
-
+/// A verification function chechks if an array have all numbers from 0 to its size
+/// Logs missing or duplicated values
+/// 
 pub fn verify(data: &[i32; N], head: usize, total: usize) -> bool {
     let mut data = data[0..total].to_vec();
     data.sort();
+
     let counts: HashMap<&i32, usize> = data.iter().counts();
     let mut outliers = counts.iter().filter(|(_, &x)| x != 1).collect_vec();
     outliers.sort_by(|x, y| x.0.cmp(y.0));
-    if !outliers.is_empty() {
-        // most of the errors
-
-        let mut missing = Vec::new();
+    
+    if !outliers.is_empty() { //catches majority of the errors
         let mut i = 0;
-        (0..total as i32).into_iter().for_each(|num| loop {
+        let missing = (0..total as i32).into_iter().filter_map(|num| loop {
             match data[i].cmp(&num) {
                 Ordering::Less => {
                     i += 1;
                 }
                 Ordering::Equal => {
                     i += 1;
-                    break;
+                    break None;
                 }
                 Ordering::Greater => {
-                    missing.push(num);
-                    break;
+                    break Some(num);
                 }
             }
-        });
+        }).collect_vec();
         create_dir_all("./Log").unwrap();
         let mut file = File::create(format!(
             "./Log/FaileLog{}.txt",

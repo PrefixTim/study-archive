@@ -2,6 +2,13 @@
 .idea
 .vscode
 build
+
+/report/*.sty
+/report/*.aux
+/report/*.fls
+/report/*.log
+/report/*.fdb*
+/report/*.gz
 # Added by cargo
 #
 # already existing elements were commented out

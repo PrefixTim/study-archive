@@ -6,7 +6,8 @@ pub struct Stack {
     head: usize,
     data: [i32; N],
 }
-
+// A naive implementation of a stack
+// its mixed with C compatability
 impl Stack {
     #[no_mangle]
     pub extern "C" fn new_stack() -> Self {

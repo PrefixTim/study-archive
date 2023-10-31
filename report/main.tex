@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{fullpage,latexsym,picinpar,amsmath,amsfonts,graphicx,listings,listings-rust}
+
+\graphicspath{ {../build/} }
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.80,0,0.5}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.95}
+
+\title{CS 142 Home Work \#2}
+\author{Timofey Malko}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    tabsize=4
+}
+
+\lstset{style=mystyle}
+
+\begin{document}
+
+\maketitle
+lib.rs
+\lstinputlisting[language=Rust]{../stack_lib/src/lib.rs}
+
+stack.rs
+\lstinputlisting[language=Rust]{../stack_lib/src/stack.rs}
+
+atomic\string_stack.rs
+\lstinputlisting[language=Rust]{../stack_lib/src/atomic\string_stack.rs}
+
+mutex\string_stack.rs
+\lstinputlisting[language=Rust]{../stack_lib/src/mutex\string_stack.rs}
+
+verify.rs
+\lstinputlisting[language=Rust]{../stack_lib/src/verify.rs}
+
+bench\string_stack.cpp
+\lstinputlisting[language=C++]{../threaded-expl/bench\string_stack.cpp}
+
+plot.py
+\lstinputlisting[language=C++]{../graph/plot.py}
+
+\includegraphics{plot.png}
+
+As expected single threaded cases have better results compared to relative double threaded cases. 
+The simple aproach provides the best results, thought it results in incorecct states of the stack in multithreaded aproach (see logs).
+The worst results are from mutex-stack which prooves that it has greatest overhead.
+For the small N atomic is similar in performance to simple stack. As N increasses the atomic shows some overhead mostly in threaded scenario and there is no errors (see lack of logs).
+\end{document}

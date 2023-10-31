@@ -8,6 +8,8 @@ pub struct MutexStack {
     data: [i32; N],
 }
 
+// A stack with head wraped in a mutex
+// Exactly like naive stack but the need to unlock head for each operation
 impl MutexStack {
     fn new() -> Self {
         Self {
@@ -33,6 +35,7 @@ impl MutexStack {
     }
 }
 
+// A compatability stuff for C
 mod c_compat {
     use super::*;
 

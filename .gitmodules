@@ -1,0 +1,3 @@
+[submodule "lib/listings-rust"]
+	path = lib/listings-rust
+	url = https://github.com/denki/listings-rust.git
