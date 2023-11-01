@@ -5,11 +5,11 @@ PORT = 8888
 ADDR = (HOST, PORT)
 
 s = newsock(ADDR)
-print("Created Socket and bind")
+print("Created Socket and bind\n")
 seq = False
 while True:
     data, seq = recieve(s, error=0.9, seq=seq)
-    print(data)
+    print(data, "\n\n")
     if data == b'':
         break
 

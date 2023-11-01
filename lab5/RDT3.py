@@ -27,98 +27,88 @@ def sendto(s, data, addr, timeout=0.1, error=None, bufsize=1024, seq=None):
 
     s.settimeout(timeout)
     if seq is None:
-        pkt_seq = False
-        chnk_size = bufsize - 3
-        chunks = [data[i : i + chnk_size] for i in range(0, len(data), chnk_size)] + [b""]
-    else:
-        pkt_seq = seq
-        chunks = [data]
+        seq = False
+    pkt_seq = seq
     res_seq = not pkt_seq
+    
+    print("")
+    while pkt_seq ^ res_seq:
+        checksum = chksum(data.decode())
+        if (not error is None) and random.random() > error:
+            print("Transfer error!!!\t")
+            checksum = chksum("error")
 
-    for chunk in chunks:
-        while pkt_seq ^ res_seq:
-            checksum = chksum(chunk.decode())
-            if (not error is None) and random.random() > error:
-                print("Transfer error\n")
-                checksum = chksum("error")
+        pkt = bytes([pkt_seq]) + data + checksum
+        print(
+            "Sent{ Seq: ",
+            bytes([pkt_seq])[0],
+            "\t, Data: ",
+            data.decode(),
+            "\t, Chksum:",
+            checksum,
+            "\t}",
+        )
+        s.sendto(pkt, addr)
 
-            pkt = bytes([pkt_seq]) + chunk + checksum
-            print(
-                "Sent{ Seq: ",
-                bytes([pkt_seq])[0],
-                "\t, Data: ",
-                chunk.decode(),
-                "\t, Chksum:",
-                checksum,
-                "\t}\n",
-            )
-            s.sendto(pkt, addr)
+        try:
+            pkt_ack, _ = s.recvfrom(bufsize)
 
-            try:
-                pkt_ack, _ = s.recvfrom(bufsize)
-
-                if pkt_ack[-2:] != chksum("ACK") and pkt_ack[1:-2] != b"ACK":
-                    continue
-
-                res_seq = bool(pkt_ack[0])
-                print("Recieved ack:\t", pkt_ack[0])
-
-            except socket.timeout:
-                print("Timeout\n")
+            if pkt_ack[-2:] != chksum("ACK") and pkt_ack[1:-2] != b"ACK":
                 continue
 
-        pkt_seq = not pkt_seq
+            res_seq = bool(pkt_ack[0])
+            print("Recieved ack:\t", pkt_ack[0])
+
+        except socket.timeout:
+            print("Timeout")
+            continue
+
+    pkt_seq = not pkt_seq
     return pkt_seq
 
 
-def recieve(s, bufsize=1024, error=None, chunked=False, seq=None):
-    data, addr = (b"", None)
-    chunk = b" "
+def recieve(s, bufsize=1024, error=None, seq=None):
+    data = b""
     if seq is None:
         pkt_seq = False
     else:
         pkt_seq = seq
     res_seq = not pkt_seq
     crrpt = False
-    while chunk != b"":
-        while pkt_seq ^ res_seq or crrpt:
-            crrpt = False
-            data_rec, addr = s.recvfrom(bufsize)
+    while pkt_seq ^ res_seq or crrpt:
+        crrpt = False
+        data_rec, addr = s.recvfrom(bufsize)
 
-            res_seq = bool(data_rec[0])
-            chunk = data_rec[1:-2]
-            print(chunk)
-            crrpt = data_rec[-2:] != chksum(chunk.decode())
-            print(
-                "Recv from:\t",
-                addr,
-                "\n{ Seq: ",
-                data_rec[0],
-                "\t, Data:",
-                chunk.decode(),
-                "\t, Chksum Rec:",
-                data_rec[-2:],
-                "\t, Chksum Data:",
-                chksum(chunk.decode()),
-                "\t, Iscrrpt:",
-                crrpt,
-                "\t, Expect seq=",
-                bytes([pkt_seq])[0],
-                "\t}\n",
-            )
+        res_seq = bool(data_rec[0])
+        data = data_rec[1:-2]
+        crrpt = data_rec[-2:] != chksum(data.decode())
+        print(
+            "Recv from:\t",
+            addr,
+            "\n{ Seq: ",
+            data_rec[0],
+            "\t, Data:",
+            data.decode(),
+            "\t, Chksum Rec:",
+            data_rec[-2:],
+            "\t, Chksum Data:",
+            chksum(data.decode()),
+            "\t, Iscrrpt:",
+            crrpt,
+            "\t, Expect seq=",
+            bytes([pkt_seq])[0],
+            "\t}",
+        )
 
-            if (not error is None) and random.random() > error:
-                time.sleep(0.2)
-                print("Delay error\n")
+        if (not error is None) and random.random() > error:
+            time.sleep(0.2)
+            print("Delay error\n")
 
-            if not crrpt:
-                pkt_ack = bytes([res_seq]) + b"ACK" + chksum("ACK")
-                s.sendto(pkt_ack, addr)
-                print("Sent ack:", bytes([res_seq]))
+        if not crrpt:
+            pkt_ack = bytes([res_seq]) + b"ACK" + chksum("ACK")
+            s.sendto(pkt_ack, addr)
+            print("Sent ack:", bytes([res_seq])[0], "\n")
 
-        data += chunk
-        pkt_seq = not res_seq
-        if not seq is None:
-            break
+    pkt_seq = not res_seq
 
     return data, pkt_seq
