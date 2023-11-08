@@ -13,7 +13,7 @@
 #include <vector>
 // I've set this just to keep the numbers in a reasonable range when
 // we print them out... for your run, please set it to 2 billion or so
-constexpr int MAXELEMENT = 1000;
+constexpr int MAXELEMENT = INT32_MAX;
 class Process {
     std::vector<int> sorted_contents_;
 
@@ -24,8 +24,11 @@ public:
     // (including its own as the first element)
     typedef enum {
         PRINT = 0,
-        VOTE_FOR_LEADER = 1
+        VOTE_FOR_LEADER = 1,
+        CHOOSE_MAX = 2,
+        CHOOSE_MEDIAN = 3
     } commands;
+
     // Just fill with some random data...
     Process(int m) {
         for (int i = 0; i < m; ++i) {
@@ -33,12 +36,14 @@ public:
         }
         std::sort(sorted_contents_.begin(), sorted_contents_.end());
     }
+
     // This is cheating
     void cheat(std::vector<int> &cheat_values) const {
         cheat_values.insert(cheat_values.end(),
                             sorted_contents_.begin(),
                             sorted_contents_.end());
     }
+
     // Only the leader will call broadcast... it will receive all the
     // responses and reduce it.
     int broadcast(std::vector<Process> &everyone, int c, int argument) {
@@ -51,6 +56,7 @@ public:
         }
         return reduce(c, argument, responses);
     }
+
     // Each process will execute this when it hears a broadcast
     int command(int c, int argument) {
         switch (c) {
@@ -64,18 +70,26 @@ public:
             // I will vote for being the leader by sending my biggest value
             // plus a random offset
             return sorted_contents_.back() + std::rand() % argument;
+        case CHOOSE_MAX:
+            // return selfs max
+            return sorted_contents_.back();
         }
         return -1;
     }
+
     // The leader can see all the responses
     int reduce(int c, int argument, const std::vector<int> &responses) {
         switch (c) {
         case PRINT:
             return -1;
+        case VOTE_FOR_LEADER:
+        case CHOOSE_MAX:
+            return std::max(*responses.begin(), *responses.end());
         }
         return -1;
     }
 };
+
 class Distributed {
 public:
     Distributed(int M, int from, int to) {
@@ -84,20 +98,22 @@ public:
             processes.emplace_back(m);
         }
     }
+
     void print_all() {
         auto *leader = pick_a_leader();
         leader->broadcast(processes, Process::PRINT, 0);
     }
+
     int max() {
         auto *leader = pick_a_leader();
-        // return leader->broadcast(processes, Process::CHOOSE_MAX,0);
-        return 0;
+        return leader->broadcast(processes, Process::CHOOSE_MAX, 0);
     }
+
     int median() {
         auto *leader = pick_a_leader();
-        // return leader->broadcast(processes, Process::CHOOSE_MEDIAN,0);
-        return 0;
+        return leader->broadcast(processes, Process::CHOOSE_MEDIAN, 0);
     }
+
     std::vector<int> cheat() const {
         std::vector<int> all_values;
         for (auto &p : processes) {
@@ -129,12 +145,18 @@ private:
 
 int main() {
     // Providing a seed value.  For debug, just pick a constant integer here
-    std::srand((unsigned)time(NULL));
-    Distributed D(3 /* processes */, 10, 15 /* with between 10 and 15 numbers */);
-    D.print_all();
-    for (const auto &x : D.cheat()) {
-        std::cout << x << ' ';
-    }
+    // std::srand((unsigned)time(NULL));
+    std::srand((unsigned)0x1234567890);
+
+    Distributed D(100 /* processes */, 1000, 15000 /* with between 10 and 15 numbers */);
+    
+    std::cout << "dist :\t" << D.max() << std::endl;
+
+    auto cheat_arr = D.cheat();
+    std::cout << "cheat:\t" << cheat_arr.back();
+    // for (const auto &x : D.cheat()) {
+    //     std::cout << x << ' ';
+    // }
     std::cout << std::endl;
     return 0;
 }
