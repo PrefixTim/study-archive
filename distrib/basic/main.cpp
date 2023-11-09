@@ -8,9 +8,11 @@
 // and have the leader's reduce make several more broadcasts (or have
 // the Distributed object pick new leaders and make new broadcasts)
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+
 // I've set this just to keep the numbers in a reasonable range when
 // we print them out... for your run, please set it to 2 billion or so
 constexpr int MAXELEMENT = INT32_MAX;
@@ -79,12 +81,14 @@ public:
 
     // The leader can see all the responses
     int reduce(int c, int argument, const std::vector<int> &responses) {
+        auto b = responses.begin();
+        auto e = responses.end();
         switch (c) {
         case PRINT:
             return -1;
         case VOTE_FOR_LEADER:
         case CHOOSE_MAX:
-            return std::max(*responses.begin(), *responses.end());
+            return *std::max_element(b, e);
         }
         return -1;
     }
@@ -145,11 +149,11 @@ private:
 
 int main() {
     // Providing a seed value.  For debug, just pick a constant integer here
-    // std::srand((unsigned)time(NULL));
-    std::srand((unsigned)0x1234567890);
+    std::srand((unsigned)time(NULL));
+    // std::srand((unsigned)0x1234567890);
 
-    Distributed D(100 /* processes */, 1000, 15000 /* with between 10 and 15 numbers */);
-    
+    Distributed D(1000 /* processes */, 1000, 15000 /* with between 10 and 15 numbers */);
+
     std::cout << "dist :\t" << D.max() << std::endl;
 
     auto cheat_arr = D.cheat();
