@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Arch Linux) (preloaded format=pdflatex 2023.10.30)  9 NOV 2023 13:43
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Arch Linux) (preloaded format=pdflatex 2023.10.30)  9 NOV 2023 16:46
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -142,7 +142,7 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 8191
  57i,6n,63p,287b,234s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb>
-Output written on msin.pdf (3 pages, 293901 bytes).
+Output written on msin.pdf (3 pages, 295563 bytes).
 PDF statistics:
  41 PDF objects out of 1000 (max. 8388607)
  21 compressed objects within 1 object stream
