@@ -1,35 +1,81 @@
 \documentclass{article}
+
 \usepackage{graphicx}
-\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[margin=10pt,font=small,labelfont=bf]{caption}
+\usepackage{subcaption}
 
 \graphicspath{ {./../images} }
 
 \begin{document}
-    \section*{Screenshots}
+\section*{Screenshots}
 
-    \includegraphics[width=11cm]{screenshot}
-    \captionof{figure}{Terminals}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=\textwidth]{screenshot}
+    \caption{Terminals}
+\end{figure}
 
-    \includegraphics[width=8cm]{nolossstevens}
-    \captionof{figure}{No Loss Stevens}
-    
-    \includegraphics[width=8cm]{nolosstcptrace}
-    \captionof{figure}{No Loss Tcptrace}
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{nolosstcptrace}
+        \caption{Tcptrace}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{nolossstevens}
+        \caption{Stevens}
+    \end{subfigure}
+    \caption{No Loss}
+\end{figure}
 
-    \includegraphics[width=8cm]{lossstevens}
-    \captionof{figure}{Loss Stevens}
-    
-    \includegraphics[width=8cm]{losstcptrace}
-    \captionof{figure}{Loss Tcptrace}
 
-    \section*{Questions}
-    \subsection*{No Loss}
-    On the time-sequence graph (tcp trace) with no loss, identify the regions of slow start
-and congestion avoidance.
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{losstcptrace}
+        \caption{Tcptrace}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{lossstevens}
+        \caption{Stevens}
+    \end{subfigure}
+    \caption{Loss}
+\end{figure}
 
-    \subsection*{Loss}
-    On the time-sequence graph in the loss case, identify the region where the loss started
-    Identify areas where slow start and congestion avoidance was used.
-    Did you see any occurrence of fast recovery? If so, did it affect the congestion window?
-    Is there a difference in throughput for the case with loss and no loss?
+\clearpage
+\section*{Questions}
+\subsection*{No Loss}
+\noindent
+On the time-sequence graph (tcp trace) with no loss, identify the regions of slow start and congestion avoidance.
+
+The slow start is in the begging of the graph.
+
+Around 8th second it looks like congestion avoidance starts.
+
+\subsection*{Loss}
+\noindent
+On the time-sequence graph in the loss case, identify the region where the loss started.
+
+From around 15th to 25th second.
+
+\noindent
+Identify areas where slow start and congestion avoidance was used.
+
+Slow start
+
+\noindent
+Did you see any occurrence of fast recovery? If so, did it affect the congestion window?
+
+Blah blah
+
+\noindent
+Is there a difference in throughput for the case with loss and no loss?
+
+Yes without loss more data was transfered succesfuly.
+
+
 \end{document}
