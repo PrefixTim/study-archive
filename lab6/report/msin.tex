@@ -52,9 +52,9 @@
 \noindent
 On the time-sequence graph (tcp trace) with no loss, identify the regions of slow start and congestion avoidance.
 
-The slow start is in the begging of the graph.
+The slow start is in the begging of the graph. (hard to see)
 
-Around 8th second it looks like congestion avoidance starts.
+The rest of the time congestion avoidance.
 
 \subsection*{Loss}
 \noindent
@@ -65,12 +65,14 @@ From around 15th to 25th second.
 \noindent
 Identify areas where slow start and congestion avoidance was used.
 
-Slow start
+The slow start is in the begging of the graph. (hard to see)
+
+The rest of the time congestion avoidance.
 
 \noindent
 Did you see any occurrence of fast recovery? If so, did it affect the congestion window?
 
-Blah blah
+Yes during the packet loss period, the congestion window decreased. After the loss is over the fast recovery happens, with the window increasing rapidly till it saturates the bandwith.
 
 \noindent
 Is there a difference in throughput for the case with loss and no loss?
