@@ -1,0 +1,286 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+\usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\classesList}[4]{
+    \item\small{
+        {#1 #2 #3 #4 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+% \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+%   \textbf{\href{http://sourabhbajaj.com/}{\Large Sourabh Bajaj}} & Email : \href{mailto:sourabh@sourabhbajaj.com}{sourabh@sourabhbajaj.com}\\
+%   \href{http://sourabhbajaj.com/}{http://www.sourabhbajaj.com} & Mobile : +1-123-456-7890 \\
+% \end{tabular*}
+
+\begin{center}
+    {\Huge \scshape Timofey Malko} \\ \vspace{1pt}
+    Saratoga, CA 95070 \\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ (650) 921-7532 ~ \href{mailto:timofei.malko@gmail.com}{\raisebox{-0.2\height}\faEnvelope\  \underline{timofei.malko@gmail.com}} ~ 
+    \href{https://www.linkedin.com/in/timofey-malko/}{\raisebox{-0.2\height}\faLinkedin\ \underline{linkedin.com/in/timofey-malko}}  ~
+    \href{https://github.com/PrefixTim}{\raisebox{-0.2\height}\faGithub\ \underline{github.com/PrefixTim}}
+    \vspace{-8pt}
+\end{center}
+
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {University of California, Riverside}{Sep. 2021 -- Current}
+      {Bachelor of Science in Computer Engineering}{Riverside, CA}
+  \resumeSubHeadingListEnd
+
+%------RELEVANT COURSEWORK-------
+% \section{Relevant Coursework}
+%     %\resumeSubHeadingListStart
+%         \begin{multicols}{4}
+%             \begin{itemize}[itemsep=-5pt, parsep=3pt]
+%                 \item\small Data Structures
+%                 \item Software Methodology
+%                 \item Algorithms Analysis
+%                 \item Database Management
+%                 \item Artificial Intelligence
+%                 \item Internet Technology
+%                 \item Systems Programming
+%                 \item Computer Architecture
+%             \end{itemize}
+%         \end{multicols}
+%         \vspace*{2.0\multicolsep}
+%     %\resumeSubHeadingListEnd
+
+
+%-----------EXPERIENCE-----------
+% \section{Experience}
+%   \resumeSubHeadingListStart
+
+%     \resumeSubheading
+%       {Electronics Company}{May 2020 -- August 2020}
+%       {Software Engineer Intern}{City, State}
+%       \resumeItemListStart
+%         \resumeItem{Developed a service to automatically perform a set of unit tests daily on a product in development in order to decrease time needed for team members to identify and fix bugs/issues.}
+%         \resumeItem{Incorporated scripts using Python and PowerShell to aggregate XML test results into an organized format and to load the latest build code onto the hardware, so that daily testing can be performed.}
+%         \resumeItem{Utilized Jenkins to provide a continuous integration service in order to automate the entire process of loading the latest build code and test files, running the tests, and generating a report of the results once per day.}
+%         \resumeItem{Explored ways to visualize and send a daily report of test results to team members  using HTML, Javascript, and CSS.}
+%       \resumeItemListEnd
+
+%     \resumeSubheading
+%       {Startup, Inc}{May 2019 -- August 2019}
+%       {Front End Developer Intern}{City, State}
+%       \resumeItemListStart
+%         \resumeItem{Assisted in development of the front end of a mobile application for iOS/Android using Dart and the Flutter framework.}
+%         \resumeItem{Worked with Google Firebase to manage user inputted data across multiple platforms including web and mobile apps.}
+%         \resumeItem{Collaborated with team members using version control systems such as Git to organize modifications and assign tasks.}
+%         \resumeItem{Utilized Android Studio as a development environment in order to visualize the application in both iOS and Android.}
+%     \resumeItemListEnd
+    
+%   \resumeSubHeadingListEnd
+% \vspace{-16pt}
+
+%-----------PROJECTS-----------
+\section{Projects}
+  \vspace{-5pt}
+  \resumeSubHeadingListStart{}
+    \resumeProjectHeading{\textbf{Platformer Game in Unity} $|$ \emph{C\#, Unity}}{}
+      \resumeItemListStart{}
+        \resumeItem{Developed a Unity-based game in a team of five, following a Scrum process.}
+        \resumeItem{Took responsibility for the coding aspect of a project, producing 60\% of scripts by implementing in C\# player-related mechanics.}
+        \resumeItem{familiarizing others with Unity`s Version Control system, ensuring smooth collaboration by resolving all merge conflicts.}
+      \resumeItemListEnd{}
+      \vspace{-13pt}
+%-----------
+    \resumeProjectHeading{\textbf{Kubernetes demo} $|$ \emph{Google Cloud Platform, Kubernetes}}{}
+      \resumeItemListStart{}
+        \resumeItem{Studied and applied Kubernetes fundamentals, by managing a GKE cluster and related resources using Terraform.}
+        \resumeItem{Deployed a demo app with Helm, featuring PostgreSQL and a REST server (Rust, Axum framework) exposed via Ingress.}
+        \resumeItem{Utilized GitHub Actions for CI/CD to build and deploy Docker images to Artifact Registry.}
+      \resumeItemListEnd{}
+      \vspace{-13pt}
+%-----------
+    \resumeProjectHeading{\textbf{Weather Station} $|$ \emph{Amazon Web Services, Docker}}{}
+      \resumeItemListStart{}
+        \resumeItem{Managed website hosting and deployment on an EC2 instance with an RDS MySQL database.}
+        \resumeItem{Set up SSL certificate using Let's Encrypt and configured Google Domains.}
+        \resumeItem{Improved image size by adding multiple stages to the Docker build.}
+        \resumeItem{Assisted in researching and integrating Kafka for multi-team data collection.}
+      \resumeItemListEnd{}
+      \vspace{-13pt}
+%-----------
+    \resumeProjectHeading{\textbf{Machine Learning Projets} $|$ \emph{Python, NumPy, Keras}}{}
+      \resumeItemListStart{}
+        \resumeItem{Learned and implemented a perceptron and then a neural network with backward error propagation using NumPy for a classical number recognition problem.}
+        \resumeItem{Trained a depth map model using Keras.}
+        \resumeItem{Implemented a genetic algorithm in Python for a grid-based life simulation.}
+        \resumeItem{Developed a Rust-based nearest neighbor classifier with a forward/backward heuristic-based search, applying my knowledge of data structures to improve performance by ten times compared to the common naive approach.}
+      \resumeItemListEnd{}
+      \vspace{-13pt}
+%-----------
+    \resumeProjectHeading{\textbf{Electric Lock Mockup} $|$ \emph{C}}{}
+      \resumeItemListStart{}
+        \resumeItem{Engaged in embedded C programming on the FRDM-K64F platform and assembled electronic components.}
+        \resumeItem{Implemented logic with concurrent state machines.}
+        \resumeItem{Adopted an Arduino LC display library for the platform to overcome the lack of platform support.}
+        \resumeItem{Used onboard timers and interrupts to improve the reliability of sensors/triggers readings.}
+      \resumeItemListEnd{}
+      \vspace{-13pt}
+%-----------
+    \resumeProjectHeading{\textbf{Web Projects} $|$ \emph{TypeScript, React, Java, Spring Boot}}{}
+      \resumeItemListStart{}
+        \resumeItem{Implemented the design, using React components for data presentation page and related services in Java backend using Spring Boot framework. Used Postman to test services’ correctness.}
+        \resumeItem{Using Spring Boot framework and Dialogflow, made a simple telegram bot. The users and command history were stored in a MySQL database.}
+      \resumeItemListEnd{}
+      \vspace{-13pt}
+%-----------
+    \resumeProjectHeading{\textbf{Other Class Projects} $|$ \emph{OOP Patterns, Data Structures}}{}
+      \resumeItemListStart{}
+        \resumeItem{Learned and implemented in C++ common OOP Design Patterns like Composite, Factory, strategy, etc.}
+        \resumeItem{Used Valgrind to ensure memory safety and Google Test to verify the correctness.}
+        \resumeItem{Implemented a MIPS CPU in Verilog.}
+      \resumeItemListEnd{}
+  \resumeSubHeadingListEnd{}
+\vspace{-15pt}
+
+
+%
+%-----------PROGRAMMING SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Programming Languages:}{ Java, Rust, C, C++, C\#, Python, TypeScript, Verilog, SQL} \\
+     \textbf{Cloud:}{ AWS (EKS, ECR, EC2, RDS, S3, Lambda), GCP (GKE, Cloud Run, Artifact Registry, Dialogflow, Firebase, Cloud Functions)} \\
+     \textbf{Infrastructure as Code:}{ Terraform, Helm}\quad
+     \textbf{VCS/CICD:}{ Git, GitHub, GitLab, GitHub Actions}\quad
+     \textbf{Containerization:}{ Kubernetes, Docker} \\
+     \textbf{Technologies/Frameworks:}{ PostgreSQL, MySQL, SQLite, Axum, Spring Boot, React, Keras, NumPy, Unity, Unity VCS, Postman, Valgrind, Google Test} \\
+    }}
+ \end{itemize}
+ \vspace{-16pt}
+
+
+%-----------INVOLVEMENT---------------
+% \section{Leadership / Extracurricular}
+%     \resumeSubHeadingListStart
+%         \resumeSubheading{Fraternity}{Spring 2020 -- Present}{President}{University Name}
+%             \resumeItemListStart
+%                 \resumeItem{Achieved a 4 star fraternity ranking by the Office of Fraternity and Sorority Affairs (highest possible ranking).}
+%                 \resumeItem{Managed executive board of 5 members and ran weekly meetings to oversee progress in essential parts of the chapter.}
+%                 \resumeItem{Led chapter of 30+ members to work towards goals that improve and promote community service, academics, and unity.}
+%             \resumeItemListEnd
+        
+%     \resumeSubHeadingListEnd
+
+%-----------Summary---------------
+\section{Summary}
+\begin{tabular}{p{\linewidth}}
+  \textit{\small I am a final-year student seeking a software development role where I can enhance my programming knowledge and skills, contributing to the team's success.}\\
+\end{tabular}
+\end{document}
