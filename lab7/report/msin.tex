@@ -37,20 +37,26 @@
 On the time-sequence graph (tcp trace), identify the regions of slow start and
 congestion avoidance.
 
-Almost imidetly congestion avoidance take over
+After 0.01s congestion avoidance starts, according to lctures slides when packetdrop starts and timeout happen, arpound 8s, slow start is used until fast recoverry around 16.3s.
 
 \noindent
 How many duplicate ACK did you capture before the TCP retransmission?
-3?
+
+around 2 most of the time.
+
 \noindent
 What is the meaning of `SACK' options in the TCP option?
+
+It's for allowing acknowlegment of out of order packets
 
 \noindent
 What is the meaning of the number in the `SACK' option? (the number in the red
 rectangle in the below figure)
 
+The range of seq numbers of acknowleged out of order packets. So there is a missing packer beofre the range and packets are ack up to the end of range.
+
 \noindent
-Did you see any sequence number of the afterward TCP packet stay in that SACK range? If
+Did you see any sequence number of the afterward TCP packet stay in that SACK range? If not, Why did that happen? (ignore the packets after the sequence number restarts from 1)
 
-
+No, because they got ack and don't need to be retransmited.
 \end{document}
