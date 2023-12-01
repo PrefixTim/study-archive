@@ -8,7 +8,17 @@ class Option:
         self.data = data
     
     def parse(data):
-        return None
+        res = {}
+        i = 0
+        dl = data.len()
+        # while i < data.len() and data[i] == 0:
+        #     i += 1
+        while i < dl and data[i] != 0xff:
+            code = data[i]
+            l = data[i + 1]
+            i += 2 + l
+            res.update({code: Option(code, l, data[i - l, min(i, dl)])})
+        return res
 
 class MsgE(Enum):
     DISCOVER = {'op': bytes.fromhex('01')}
@@ -48,7 +58,7 @@ class Msg:
         g_ip = data[24:28]
         c_h_addr = data[28:44]
         op = Option.parse(data[236:-1])
-        return None
+        return Msg()
 
 DHCP_SERVER = ('', 67)
 DHCP_CLIENT = ('255.255.255.255', 68)
