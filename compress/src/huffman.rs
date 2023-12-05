@@ -4,6 +4,8 @@ use itertools::Itertools;
 
 // use std::collections::
 //My Tree is neeed with arenas
+
+
 struct Huffman<'a> {
     table: BTreeMap<usize, &'a str>,
     data: String
@@ -12,11 +14,11 @@ struct Huffman<'a> {
 impl<'a> Huffman<'a> {
     fn createTable(&mut self) {
         let freq = 
-            freq_count(&self.data).iter()
+            freq_count(&self.data).into_iter()
             .sorted_by(|(_, lf), (_, rf)| usize::cmp(lf, rf));
 
-        for (&word, &f) in freq {
-            self.table.insert(key, value);
+        for (word, f) in freq {
+            // self.table.insert(key, value);
         }
     }
 }
