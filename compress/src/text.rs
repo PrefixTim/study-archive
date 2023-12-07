@@ -18,6 +18,10 @@ pub fn get_texts_paths() -> Vec<PathBuf> {
 pub fn get_texts() -> Vec<String> {
     get_texts_paths().iter().map(|path| fs::read_to_string(path)).flatten().collect_vec()
 }
+
+pub fn get_text_combined() -> String {
+    get_texts().into_iter().collect()
+}
 // #[cfg(test)]
 // mod tests {
 //     use super::*;
