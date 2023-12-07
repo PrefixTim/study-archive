@@ -22,6 +22,40 @@ pub fn get_texts() -> Vec<String> {
 pub fn get_text_combined() -> String {
     get_texts().into_iter().collect()
 }
+
+pub fn parse_text<'a>(data: &'a str) -> Vec<&'a str> {
+    let mut itr = data.match_indices(|val: char| val.is_seperator());
+    let mut res = Vec::new();
+    let mut last = 0;
+    for (i, m) in itr {
+        //stackoverflow =)
+        if last != i {
+            res.push(&data[last..i]);
+        }
+        res.push(m);
+        last = i + m.len();
+    }
+    if last != data.len() {
+        res.push(&data[last..])
+    }
+    res
+    // data.split_whitespace().collect_vec()
+}
+
+trait SeperatorTest {
+    fn is_seperator(&self) -> bool;
+}
+
+impl SeperatorTest for char {
+    fn is_seperator(&self) -> bool {
+        self.is_whitespace() || self.is_ascii_punctuation()
+        // | matches!(*self, '!'..='&')
+        // | matches!(*self, '!'..='/')
+        // | matches!(*self, ':'..='@')
+        // | matches!(*self, '['..='`')
+        // | matches!(*self, '{'..='~')
+    }
+}
 // #[cfg(test)]
 // mod tests {
 //     use super::*;

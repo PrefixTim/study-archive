@@ -1,19 +1,25 @@
-// use weezl::{encode::Encoder, decode::Decoder, BitOrder};
+use weezl::{encode::Encoder, decode::Decoder, BitOrder};
 
 // use std::{collections::{BTreeMap, BTreeSet}, cmp::Reverse};
 
 use itertools::Itertools;
 
-// use compress::{huffman::freq_count, text::get_texts};
+use compress::{huffman::{tree::create_tree, freq::freq_count}, text::{get_text_combined, parse_text}};
 // use itertools::Itertools;
 fn main() {
-    let data = "One Fo%^r #tree\tFo%^r\n5 \n\n\n#tree #tree           Fo%^r         \t\n     \t            Fo%^r";
-    let splt = data.split_inclusive(|val: char| val.is_whitespace()).collect_vec();
-    println!("{:?}", splt);
-    let splt = data.split_terminator(|val: char| val.is_whitespace()).collect_vec();
-    println!("{:?}", splt);
-    // let text = get_texts();
-    // println!("{}", text.len());
+    let text = get_text_combined();
+    // let compress = Encoder::new(BitOrder::Msb, 8)
+    // .encode(text.as_bytes())
+    // .unwrap();
+    // println!("original: {}\ncompressed: {}\nratio: {}", text.as_bytes().len(), compress.len(), text.as_bytes().len() as f64 / compress.len() as f64);
+    let res = freq_count(parse_text(&text), 1000);
+    println!("{:?}", res.iter().filter(|(w, f)| w.len() == 1).collect_vec());
+    println!("{:?}", f64::log2(res.len() as f64));
+    println!("{:}", res.iter().fold(0, |sum, (w, f)| sum + f/w.len()));
+    println!("{:}", res.len());
+    println!("{:}", res.len()as f64 *f64::log2(res.len() as f64));
+    println!("{}", text.len());
+
     // let mut freq = BTreeSet::new();
 
     // freq_count(text.first().unwrap().split_whitespace().collect_vec(), None)
