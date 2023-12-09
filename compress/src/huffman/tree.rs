@@ -23,7 +23,7 @@ pub struct Tree {
 }
 
 impl Tree {
-    pub fn new(leafs: Vec<(&str, usize)>) -> Self {
+    pub fn new(leafs: HashMap<&str, usize>) -> Self {
         let mut arena: Vec<TreeNode> = leafs
             .into_iter()
             .map(|(word, freq)| TreeNode(freq, NodeVal::Leaf(word.to_owned()), BitVec::new()))
@@ -51,7 +51,7 @@ impl Tree {
                     let tmp = rev_table.insert(v.clone(), word.clone());
                     if let Some(t) = tmp {
                         panic!("{}", t);
-                    } 
+                    }
                 }
                 NodeVal::Node(l, r) => {
                     let (l, r) = (*l, *r);
@@ -66,7 +66,13 @@ impl Tree {
                 }
             }
         }
-        Tree { head, arena, table, rev_table}
+        // println!("{}", (std::mem::size_of_val(&table) + std::mem::size_of_val(&rev_table) + std::mem::size_of_val(&arena)));
+        Tree {
+            head,
+            arena,
+            table,
+            rev_table,
+        }
     }
 
     pub fn encode(&self, val: &str) -> Option<BitVec<u16, Msb0>> {
@@ -74,9 +80,7 @@ impl Tree {
     }
 
     pub fn decode(&self, val: &BitVec<u16, Msb0>) -> Option<&String> {
-        let res = self.rev_table.get(val);
-        // println!("{}", val.to_string());
-        res
+        self.rev_table.get(val)
     }
 }
 
@@ -103,6 +107,5 @@ mod tests {
         let ltr = "A".to_owned();
         assert_eq!(tree.decode(&bts), Some(&ltr));
         assert_eq!(tree.encode("A").unwrap(), bts);
-
     }
 }

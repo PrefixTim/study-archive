@@ -14,8 +14,7 @@ pub fn freq_count(data: Vec<&str>, min: usize) -> HashMap<&str, usize> {
         // .map(|(word, f)| (word, f * word.len()))
         .partition(|(_, f)| *f >= min);
     rare.into_iter()
-    // let mut common = HashMap::new();
-    // data.into_iter().counts().into_iter()
+
         .map(|(word, f)| (word.split_inclusive(|_| true).counts(), f))
         .fold(HashMap::new(), |mut res, (count, freq)| {
             count.into_iter().for_each(|(c, f)| {

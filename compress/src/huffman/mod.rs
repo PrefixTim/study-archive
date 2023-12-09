@@ -1,6 +1,8 @@
 pub mod freq;
 pub mod tree;
 
+use std::io::{Read, Write};
+
 use crate::text::{get_text_combined, load_data, parse_text, store_data};
 use bitvec::{order::Msb0, vec::BitVec};
 use itertools::Itertools;
@@ -11,29 +13,33 @@ pub struct Huffman {
     tree: Tree,
 }
 
-pub trait Compressor {
-     fn new(data: &str, limit: usize) -> Huffman;
-
-     fn encode(&self, data: &str) -> BitVec<u16, Msb0>;
-
-     fn decode(&self, data: BitVec<u16, Msb0>) -> String;
-
-    fn create_table(&mut self);
-}
-
-impl Compressor for Huffman {
-     fn new(data: &str, limit: usize) -> Huffman {
-        let tree = Tree::new(
-            freq_count(parse_text(data), limit)
-                .into_iter()
-                .map(|(w, f)| (w, f))
-                .collect_vec(),
-        );
+impl Huffman {
+    pub fn new(data: &str, limit: usize) -> Huffman {
+        let tree = Tree::new(freq_count(parse_text(data), limit));
         Huffman { tree }
     }
 
-     fn encode(&self, data: &str) -> BitVec<u16, Msb0> {
-        let mut enc: BitVec<u16, Msb0> = BitVec::new();
+    fn create_table(&mut self) {
+        let text = get_text_combined();
+    }
+}
+
+pub trait Compressor {
+    type Enc: Read + Write;
+    fn new_buf() -> Self::Enc;
+    fn encode(&self, data: &str) -> Self::Enc;
+    fn decode(&self, data: Self::Enc) -> String;
+}
+
+impl Compressor for Huffman {
+    type Enc = BitVec<u16, Msb0>;
+    
+    fn new_buf() -> Self::Enc {
+        BitVec::new()
+    }
+
+    fn encode(&self, data: &str) -> Self::Enc {
+        let mut enc: Self::Enc = Self::new_buf();
         for el in parse_text(data) {
             if let Some(mut code) = self.tree.encode(el) {
                 enc.append(&mut code);
@@ -48,10 +54,10 @@ impl Compressor for Huffman {
         enc
     }
 
-     fn decode(&self, mut data: BitVec<u16, Msb0>) -> String {
-        let mut data: BitVec<u16, Msb0> = data.into_iter().rev().collect();
-        let mut tmp: BitVec<u16, Msb0> = BitVec::new();
-        let mut res = String::with_capacity(data.len()/2);
+    fn decode(&self, data: Self::Enc) -> String {
+        let mut data: Self::Enc = data.into_iter().rev().collect();
+        let mut tmp = Self::new_buf();
+        let mut res = String::with_capacity(data.len() / 2);
         while !data.is_empty() {
             tmp.push(data.pop().unwrap());
             if let Some(s) = self.tree.decode(&tmp) {
@@ -60,9 +66,5 @@ impl Compressor for Huffman {
             }
         }
         res
-    }
-
-    fn create_table(&mut self) {
-        let text = get_text_combined();
     }
 }
