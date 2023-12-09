@@ -1,4 +1,3 @@
-use bitvec::{order::Msb0, vec::BitVec};
 use compress::{
     huffman::{Compressor, Huffman},
     text::{get_text_combined, load_data, store_data, store_txt, get_texts},
@@ -19,5 +18,5 @@ fn encdec<T: Compressor>(cmpr: &T, text: &str, path: &str) {
     load_data(&format!("{path}.cmpr"), &mut data).unwrap();
     let text_dec = cmpr.decode(data);
     store_txt(&format!("{path}.txt"), &text_dec).unwrap();
-    println!("{}", text == text_dec);
+    assert_eq!(text, text_dec);
 }

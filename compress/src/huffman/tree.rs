@@ -92,7 +92,7 @@ mod tests {
 
     #[test]
     fn create_tree_test() {
-        let leafs = vec![
+        let leafs: Vec<(&str, usize)> = vec![
             ("A", 10),
             ("E", 15),
             ("I", 12),
@@ -101,7 +101,7 @@ mod tests {
             ("P", 13),
             ("\n", 1),
         ];
-        let tree = Tree::new(leafs);
+        let tree = Tree::new(leafs.into_iter().collect());
         println!("{:?}", tree);
         let bts = BitVec::<u16, Msb0>::repeat(true, 3);
         let ltr = "A".to_owned();

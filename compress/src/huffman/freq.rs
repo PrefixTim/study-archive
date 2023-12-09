@@ -6,15 +6,18 @@ use itertools::Itertools;
 /// returns tuple wher
 /// .0 is the cases thate occure more than min
 /// .1 is occurance of sybles of combination of words/symbold that occure less than min
-pub fn freq_count(data: Vec<&str>, min: usize) -> HashMap<&str, usize> {
-    let (mut common, rare): (HashMap<&str, usize>, HashMap<&str, usize>) = data
+pub fn freq_count<'a>(data: &'a Vec<&'a str>, min: usize) -> HashMap<&'a str, usize> {
+    let mut counts: HashMap<&str, usize> = HashMap::new();
+    data.iter().for_each(|item| *counts.entry(item).or_default() += 1);
+    
+    let (mut common, rare): (HashMap<&str, usize>, HashMap<&str, usize>) = counts
         .into_iter()
-        .counts()
-        .into_iter()
+        // .map(|(&w, f)| (w, f))
         // .map(|(word, f)| (word, f * word.len()))
         .partition(|(_, f)| *f >= min);
+    
+    // println!("{}", rare.len());
     rare.into_iter()
-
         .map(|(word, f)| (word.split_inclusive(|_| true).counts(), f))
         .fold(HashMap::new(), |mut res, (count, freq)| {
             count.into_iter().for_each(|(c, f)| {
@@ -24,7 +27,7 @@ pub fn freq_count(data: Vec<&str>, min: usize) -> HashMap<&str, usize> {
         })
         .into_iter()
         .for_each(|(k, v)| {
-            common.insert(k, v);
+            common.insert(&k, v);
         });
     common
 }
@@ -53,13 +56,14 @@ mod test {
         res.insert("O", 3);
         res.insert("5", 1);
         res.insert("#", 2);
-        assert_eq!(freq_count(parse_text(data), 2), res);
+        assert_eq!(freq_count(&parse_text(data), 2), res);
     }
     #[bench]
     fn bench_freq_count(b: &mut Bencher) {
         let def_str = "test ".repeat(1000);
         let vec = &crate::text::get_texts();
         let data: &String = vec.first().unwrap_or(&def_str);
-        b.iter(|| freq_count(parse_text(data), 1))
+        let pd = parse_text(data);
+        b.iter(|| freq_count(&pd, 1))
     }
 }

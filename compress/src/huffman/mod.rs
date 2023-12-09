@@ -15,7 +15,7 @@ pub struct Huffman {
 
 impl Huffman {
     pub fn new(data: &str, limit: usize) -> Huffman {
-        let tree = Tree::new(freq_count(parse_text(data), limit));
+        let tree = Tree::new(freq_count(&parse_text(data), limit));
         Huffman { tree }
     }
 
@@ -40,31 +40,36 @@ impl Compressor for Huffman {
 
     fn encode(&self, data: &str) -> Self::Enc {
         let mut enc: Self::Enc = Self::new_buf();
-        for el in parse_text(data) {
-            if let Some(mut code) = self.tree.encode(el) {
-                enc.append(&mut code);
-            } else {
-                el.split_inclusive(|_| true)
-                    .for_each(|c| enc.append(&mut self.tree.encode(c).unwrap()));
+
+        for el in parse_text(data).into_iter() {
+            match self.tree.encode(el) {
+                Some(mut code) => enc.append(&mut code),
+                None => el.split_inclusive(|_| true).for_each(|c| enc.append(&mut self.tree.encode(c).unwrap()))
             }
         }
+
+        enc.push(true);
         while enc.len() % 8 != 0 {
             enc.push(false);
         }
+
         enc
     }
 
-    fn decode(&self, data: Self::Enc) -> String {
-        let mut data: Self::Enc = data.into_iter().rev().collect();
+    fn decode(&self, mut data: Self::Enc) -> String {
         let mut tmp = Self::new_buf();
         let mut res = String::with_capacity(data.len() / 2);
-        while !data.is_empty() {
-            tmp.push(data.pop().unwrap());
+
+        while !data.is_empty() && !data.pop().unwrap() {}
+
+        for el in data.into_iter() {
+            tmp.push(el);
             if let Some(s) = self.tree.decode(&tmp) {
                 res += s;
                 tmp.clear();
             }
         }
+
         res
     }
 }
