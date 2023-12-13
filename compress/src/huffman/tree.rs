@@ -1,9 +1,13 @@
 use bitvec::prelude::*;
+use ciborium::{from_reader, into_writer};
+use inflate::inflate_bytes;
 use itertools::Itertools;
+use serde::{ser::SerializeMap, Deserialize, Serialize};
 use std::{
     collections::{BTreeSet, HashMap},
     usize,
 };
+use zopfli::{Format, Options};
 
 #[derive(Debug)]
 enum NodeVal {
@@ -16,8 +20,8 @@ struct TreeNode(usize, NodeVal, BitVec<u16, Msb0>);
 
 #[derive(Debug)]
 pub struct Tree {
-    head: usize,
-    arena: Vec<TreeNode>,
+    // head: usize,
+    // arena: Vec<TreeNode>,
     table: HashMap<String, BitVec<u16, Msb0>>,
     rev_table: HashMap<BitVec<u16, Msb0>, String>,
 }
@@ -66,10 +70,9 @@ impl Tree {
                 }
             }
         }
-        // println!("{}", (std::mem::size_of_val(&table) + std::mem::size_of_val(&rev_table) + std::mem::size_of_val(&arena)));
         Tree {
-            head,
-            arena,
+            // head,
+            // arena,
             table,
             rev_table,
         }
@@ -81,6 +84,58 @@ impl Tree {
 
     pub fn decode(&self, val: &BitVec<u16, Msb0>) -> Option<&String> {
         self.rev_table.get(val)
+    }
+
+    pub fn save(&self) {
+        into_writer(&self, std::fs::File::create("data/table/cmpr.tbl").unwrap()).unwrap();
+        zopfli::compress(
+            Options::default(),
+            Format::Deflate,
+            std::fs::File::open("data/table/cmpr.tbl").unwrap(),
+            std::fs::File::create("data/table/cmpr.tbl.z").unwrap(),
+        )
+        .unwrap();
+    }
+
+    pub fn load() -> Self {
+        let mut data = Vec::new();
+        std::io::copy(
+            &mut std::fs::File::open("data/table/cmpr.tbl.z").unwrap(),
+            &mut data,
+        )
+        .unwrap();
+        let res = inflate_bytes(&data).unwrap();
+        from_reader(&res[..]).unwrap()
+    }
+}
+
+impl<'de> Deserialize<'de> for Tree {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let map: HashMap<String, Vec<u16>> = HashMap::deserialize(deserializer).unwrap();
+        let mut table = HashMap::with_capacity(map.len());
+        let mut rev_table = HashMap::with_capacity(map.len());
+        for (w, p) in map {
+            let p: BitVec<u16, Msb0> = p.view_bits().to_owned();
+            table.insert(w.clone(), p.clone());
+            rev_table.insert(p, w);
+        }
+        Ok(Self { table, rev_table })
+    }
+}
+
+impl Serialize for Tree {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut map = serializer.serialize_map(Some(self.table.len()))?;
+        for (w, p) in self.table.iter() {
+            map.serialize_entry(w, &p.clone().into_vec())?;
+        }
+        map.end()
     }
 }
 
