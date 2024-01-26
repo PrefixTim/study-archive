@@ -1,0 +1,14 @@
+.idea
+.vscode
+
+**/target
+**/build
+
+*.sty
+*.aux
+*.fls
+*.log
+*.fdb*
+*.gz
+compress/data/text/
+compress/data/cmpr/
