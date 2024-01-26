@@ -10,3 +10,5 @@
 *.log
 *.fdb*
 *.gz
+compress/data/text/
+compress/data/cmpr/
