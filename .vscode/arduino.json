@@ -1,5 +1,0 @@
-{
-    "board": "arduino:avr:uno",
-    "sketch": "cl_project/cl_project.ino",
-    "port": "/dev/ttyACM0"
-}
